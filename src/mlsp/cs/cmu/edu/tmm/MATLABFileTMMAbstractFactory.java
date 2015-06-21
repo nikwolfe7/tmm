@@ -17,7 +17,6 @@ public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
   public TMixtureModel[] getAllAvailableModels() {
     TMixtureModel[] mixture = new TMixtureModel[4];
     int i = 0;
-    TMMFactory factory = new MATLABFileTMMFactory();
     System.out.println("-----------------------------------------------------------------------");
     TMixtureModel model = getModel(TMMConstants.CLASS_GO);
     model.printMixtureDistributions();
@@ -28,10 +27,10 @@ public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
     model.printMixtureDistributions();
     mixture[i++] = model;
     
-    System.out.println("\n-----------------------------------------------------------------------\n");
-    model = getModel(TMMConstants.CLASS_BOTH);
-    model.printMixtureDistributions();
-    mixture[i++] = model;
+//    System.out.println("\n-----------------------------------------------------------------------\n");
+//    model = getModel(TMMConstants.CLASS_BOTH);
+//    model.printMixtureDistributions();
+//    mixture[i++] = model;
     
     System.out.println("\n-----------------------------------------------------------------------\n");
     model = getModel(TMMConstants.CLASS_BACKGROUND);

@@ -63,7 +63,6 @@ public class MFCCVector implements Iterator<Double> {
   }
   
   public void printVector() {
-    System.out.print("MFCC: ");
     while(hasNext())
       System.out.print("\t"+next());
     System.out.println();

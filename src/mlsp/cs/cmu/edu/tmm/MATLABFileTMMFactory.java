@@ -12,14 +12,13 @@ import java.util.Scanner;
  */
 public class MATLABFileTMMFactory implements TMMFactory {
   
-  private String modelsDir = "./models/";
   private String tmmExt = ".tmm";
   private String dimensionMarker = "# Dimension of data";
   private String mixtureComponentsMarker = "# Number of student-t components in mixture";
-  private String mixtureWeightsMarker = "# mixture weights for all student-t comopnent densities";
-  private String etaValuesMarker = "# eta values for all student-t comopnent densities";
-  private String meansMarker = "# means for all student-t comopnent densities";
-  private String variancesMarker = "# variances for all student-t comopnent densities";
+  private String mixtureWeightsMarker = "# mixture weights for all student-t component densities";
+  private String etaValuesMarker = "# eta values for all student-t component densities";
+  private String meansMarker = "# means for all student-t component densities";
+  private String variancesMarker = "# variances for all student-t component densities";
 
   public MATLABFileTMMFactory() {}
 
@@ -28,7 +27,7 @@ public class MATLABFileTMMFactory implements TMMFactory {
     System.out.println("Creating model for " + modelName + " from model file: " + fileName + "...");
     TMixtureModel tmm = null;
     if (fileName.endsWith(tmmExt)) {
-      File file = new File(modelsDir + fileName);
+      File file = new File(fileName);
       int dimension = 0;
       int numComponents = 0;
       double[] etaValues = null;
@@ -99,16 +98,16 @@ public class MATLABFileTMMFactory implements TMMFactory {
   public static void main(String[] args) {
     TMMFactory factory = new MATLABFileTMMFactory();
     System.out.println("-----------------------------------------------------------------------");
-    TMixtureModel model = factory.generateTMM("Go.mfc.tmm", TMMConstants.CLASS_GO.getStringVal());
+    TMixtureModel model = factory.generateTMM(TMMConstants.CLASS_GO.getFileName(), TMMConstants.CLASS_GO.getStringVal());
     model.printMixtureDistributions();
     System.out.println("\n-----------------------------------------------------------------------\n");
-    model = factory.generateTMM("Jump.mfc.tmm", TMMConstants.CLASS_JUMP.getStringVal());
+    model = factory.generateTMM(TMMConstants.CLASS_JUMP.getFileName(), TMMConstants.CLASS_JUMP.getStringVal());
     model.printMixtureDistributions();
+//    System.out.println("\n-----------------------------------------------------------------------\n");
+//    model = factory.generateTMM("Go-Jump.mfc.tmm", TMMConstants.CLASS_BOTH.getStringVal());
+//    model.printMixtureDistributions();
     System.out.println("\n-----------------------------------------------------------------------\n");
-    model = factory.generateTMM("Go-Jump.mfc.tmm", TMMConstants.CLASS_BOTH.getStringVal());
-    model.printMixtureDistributions();
-    System.out.println("\n-----------------------------------------------------------------------\n");
-    model = factory.generateTMM("Others.mfc.tmm", TMMConstants.CLASS_BACKGROUND.getStringVal());
+    model = factory.generateTMM(TMMConstants.CLASS_BACKGROUND.getFileName(), TMMConstants.CLASS_BACKGROUND.getStringVal());
     model.printMixtureDistributions();
   }
 

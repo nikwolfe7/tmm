@@ -65,17 +65,22 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
 
   @Override
   public MFCCVector[] next() {
-    if(pulseTimeInMilliseconds > 0) {
-      try {
-        Thread.currentThread();
-        Thread.sleep(pulseTimeInMilliseconds);
-      } catch (InterruptedException e1) {
-        Thread.currentThread().interrupt();
-      }
+    if (pulseTimeInMilliseconds > 0) {
+      new Runnable() {
+        @Override
+        public void run() {
+          try {
+            Thread.currentThread();
+            Thread.sleep(pulseTimeInMilliseconds);
+          } catch (InterruptedException e1) {
+            Thread.currentThread().interrupt();
+          }
+        }
+      }.run();
     }
     int size = Math.min(blockSize, mfccs.size());
     MFCCVector[] block = new MFCCVector[size];
-    for(int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
       try {
         block[i] = mfccs.take();
       } catch (InterruptedException e) {
@@ -87,11 +92,13 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
   }
   
   public static void main(String[] args) {
-    MFCCBlockStream factory = new MFCCBlockStream("./features/My.mfc", 3);
-    factory.setPulseTime(500);
+    MFCCBlockStream factory = new MFCCBlockStream("./features/My.mfc", 10);
+    factory.setPulseTime(100);
     for(MFCCVector[] block : factory) {
-      for(MFCCVector vec : block)
+      for(MFCCVector vec : block) {
+        System.out.print("MFCC:\t");
         vec.printVector();
+      }
     }
   }
 

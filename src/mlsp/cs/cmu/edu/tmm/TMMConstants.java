@@ -5,8 +5,10 @@ public enum TMMConstants {
   CLASS_GO(1,"GO","Go.mfc.tmm"),
   CLASS_JUMP(2,"JUMP","Jump.mfc.tmm"),
   CLASS_BOTH(3,"BOTH","Go-Jump.mfc.tmm"),
-  CLASS_BACKGROUND(4,"BACKGROUND","Others.mfc.tmm");
+  CLASS_BACKGROUND(4,"BACKGROUND","Other.mfc.tmm"),
+  MFCC_BLOCK_SIZE(5,"5",null);
   
+  private final String modelDir = "./models/mix64/";
   private final int value;
   private final String stringVal;
   private final String fileName;
@@ -26,7 +28,7 @@ public enum TMMConstants {
   }
 
   public String getFileName() {
-    return fileName;
+    return modelDir + fileName;
   }
   
 }
