@@ -6,14 +6,14 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class MFCCFactory implements Iterable<MFCCVector[]>, Iterator<MFCCVector[]> {
+public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVector[]> {
 
   private int blockSize;
   private String mfccExt = ".mfc";
   private LinkedBlockingQueue<MFCCVector> mfccs;
   private int pulseTimeInMilliseconds;
   
-  public MFCCFactory(String filename, int blockSize) {
+  public MFCCBlockStream(String filename, int blockSize) {
     this.blockSize = blockSize;
     this.mfccs = new LinkedBlockingQueue<MFCCVector>();
     if(filename.endsWith(mfccExt)) {
@@ -36,7 +36,7 @@ public class MFCCFactory implements Iterable<MFCCVector[]>, Iterator<MFCCVector[
     }
   }
   
-  public MFCCFactory(int blockSize) {
+  public MFCCBlockStream(int blockSize) {
     this.blockSize = blockSize;
     this.mfccs = new LinkedBlockingQueue<MFCCVector>();
   }
@@ -87,7 +87,7 @@ public class MFCCFactory implements Iterable<MFCCVector[]>, Iterator<MFCCVector[
   }
   
   public static void main(String[] args) {
-    MFCCFactory factory = new MFCCFactory("./features/My.mfc", 3);
+    MFCCBlockStream factory = new MFCCBlockStream("./features/My.mfc", 3);
     factory.setPulseTime(500);
     for(MFCCVector[] block : factory) {
       for(MFCCVector vec : block)
