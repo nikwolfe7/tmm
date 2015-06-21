@@ -15,25 +15,32 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
   private LinkedBlockingQueue<MFCCVector> mfccs;
 
   private int pulseTimeInMilliseconds;
+  
+  private boolean liveStream;
 
   public MFCCBlockStream(String filename, int blockSize) {
     this.blockSize = blockSize;
+    this.liveStream = false;
     this.mfccs = new LinkedBlockingQueue<MFCCVector>();
     loadMFCCsFromFile(filename);
   }
-
+  
   MFCCBlockStream(String filename) {
+    this.blockSize = TMMConstants.MFCC_BLOCK_SIZE.getValue();
+    this.liveStream = false;
     this.mfccs = new LinkedBlockingQueue<MFCCVector>();
     loadMFCCsFromFile(filename);
   }
-
+  
   public MFCCBlockStream(int blockSize) {
     this.blockSize = blockSize;
+    this.liveStream = true;
     this.mfccs = new LinkedBlockingQueue<MFCCVector>();
   }
 
   public MFCCBlockStream() {
     this.blockSize = TMMConstants.MFCC_BLOCK_SIZE.getValue();
+    this.liveStream = true;
     this.mfccs = new LinkedBlockingQueue<MFCCVector>();
   }
 
@@ -77,7 +84,10 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
 
   @Override
   public boolean hasNext() {
-    return !mfccs.isEmpty();
+    if(liveStream)
+      return true;
+    else
+      return !mfccs.isEmpty();
   }
 
   @Override
@@ -110,7 +120,7 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
 
   public static void main(String[] args) {
     MFCCBlockStream factory = new MFCCBlockStream("./features/My.mfc");
-    factory.setPulseTime(100);
+    factory.setPulseTime(10);
     for (MFCCVector[] block : factory) {
       for (MFCCVector vec : block) {
         System.out.print("MFCC:\t");

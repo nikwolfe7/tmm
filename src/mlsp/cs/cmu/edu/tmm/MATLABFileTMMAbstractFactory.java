@@ -3,9 +3,11 @@ package mlsp.cs.cmu.edu.tmm;
 public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
 
   private TMMFactory factory;
+  private boolean outputOn;
   
   public MATLABFileTMMAbstractFactory() {
     this.factory = new MATLABFileTMMFactory();
+    this.outputOn = false;
   }
 
   @Override
@@ -17,14 +19,16 @@ public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
   public TMixtureModel[] getAllAvailableModels() {
     TMixtureModel[] mixture = new TMixtureModel[4];
     int i = 0;
-    System.out.println("-----------------------------------------------------------------------");
+    System.out.println("-----------------------------------------------------------------------\n");
     TMixtureModel model = getModel(TMMConstants.CLASS_GO);
-    model.printMixtureDistributions();
+    if(outputOn)
+      model.printMixtureDistributions();
     mixture[i++] = model;
     
     System.out.println("\n-----------------------------------------------------------------------\n");
     model = getModel(TMMConstants.CLASS_JUMP);
-    model.printMixtureDistributions();
+    if(outputOn)
+      model.printMixtureDistributions();
     mixture[i++] = model;
     
 //    System.out.println("\n-----------------------------------------------------------------------\n");
@@ -34,8 +38,11 @@ public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
     
     System.out.println("\n-----------------------------------------------------------------------\n");
     model = getModel(TMMConstants.CLASS_BACKGROUND);
-    model.printMixtureDistributions();
+    if(outputOn)
+      model.printMixtureDistributions();
     mixture[i++] = model;
+    
+    System.out.println("\n-----------------------------------------------------------------------\n");
     return mixture;
   }
   
