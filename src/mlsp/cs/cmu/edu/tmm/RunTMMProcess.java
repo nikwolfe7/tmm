@@ -12,6 +12,7 @@ public abstract class RunTMMProcess extends Thread {
         double[] alpha = TMMAlphaPosterior.computeAlpha(featureVector, mixtureModels);
         registerPosteriors(alpha);
       }
+      Thread.currentThread().interrupt();
     }
   }
 

@@ -3,7 +3,8 @@ package mlsp.cs.cmu.edu.tmm;
 public class TMMAlphaPosterior {
   
   public static double[] computeAlpha(MFCCVector[] featureVector, TMixtureModel[] mixtureModels) {
-    return new double[4];
+    double[] alpha = new double[] {1, 2, 3, 4};
+    return alpha;
   }
   
 
