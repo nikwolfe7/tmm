@@ -2,6 +2,8 @@ package mlsp.cs.cmu.edu.tmm;
 
 import java.text.DecimalFormat;
 import java.text.Format;
+
+import cern.jet.stat.Gamma;
 import jebl.math.GammaFunction;
 
 public class TDistribution {
@@ -102,10 +104,15 @@ public class TDistribution {
       logScalingConstant -= 0.5 * Math.log(variances[i]);
     }
     logScalingConstant -= (0.5 * dimension) * Math.log(Math.PI * eta);
-    logScalingConstant -= GammaFunction.lnGamma(eta * 0.5);
-    logScalingConstant += GammaFunction.lnGamma((eta + dimension) * 0.5);
+    logScalingConstant -= logGamma(eta * 0.5);
+    logScalingConstant += logGamma((eta + dimension) * 0.5);
   }
-
+  
+  private double logGamma(double arg) {
+    return Gamma.logGamma(arg); // colt
+//    return GammaFunction.lnGamma(arg); // jebl
+  }
+  
   public double getLogConstant() {
     return logScalingConstant;
   }
@@ -118,6 +125,7 @@ public class TDistribution {
     Format format = new DecimalFormat("##.###");
     System.out.println("Dimension: " + dimension);
     System.out.println("Eta: " + eta + " Inverse: " + etaInverse);
+    System.out.println(logScalingConstant);
     System.out.println("log Scaling Constant: " + logScalingConstant);
     System.out.print("Means: ");
     for (Double d : means)
