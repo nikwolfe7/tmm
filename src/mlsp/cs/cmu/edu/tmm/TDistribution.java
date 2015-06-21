@@ -52,7 +52,7 @@ public class TDistribution {
       setVariance(i, variances[i]);
     }
     setEta(eta);
-    calculateLogConstant();
+    calculateLogScalingConstant();
   }
 
   public void setMean(int index, double mean) {
@@ -98,7 +98,7 @@ public class TDistribution {
     return etaInverse;
   }
 
-  public void calculateLogConstant() {
+  public void calculateLogScalingConstant() {
     logScalingConstant = 0;
     for (int i = 0; i < dimension; i++) {
       logScalingConstant -= 0.5 * Math.log(variances[i]);
@@ -113,7 +113,7 @@ public class TDistribution {
 //    return GammaFunction.lnGamma(arg); // jebl
   }
   
-  public double getLogConstant() {
+  public double getLogScalingConstant() {
     return logScalingConstant;
   }
 

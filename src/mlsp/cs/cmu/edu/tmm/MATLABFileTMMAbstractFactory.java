@@ -3,8 +3,9 @@ package mlsp.cs.cmu.edu.tmm;
 public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
 
   private TMMFactory factory;
+
   private boolean outputOn;
-  
+
   public MATLABFileTMMAbstractFactory() {
     this.factory = new MATLABFileTMMFactory();
     this.outputOn = false;
@@ -17,35 +18,32 @@ public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
 
   @Override
   public TMixtureModel[] getAllAvailableModels() {
-    TMixtureModel[] mixture = new TMixtureModel[4];
-    int i = 0;
     System.out.println("-----------------------------------------------------------------------\n");
-    TMixtureModel model = getModel(TMMConstants.CLASS_GO);
-    if(outputOn)
-      model.printMixtureDistributions();
-    mixture[i++] = model;
-    
+    TMixtureModel m1 = getModel(TMMConstants.CLASS_GO);
+    if (outputOn)
+      m1.printMixtureDistributions();
+
     System.out.println("\n-----------------------------------------------------------------------\n");
-    model = getModel(TMMConstants.CLASS_JUMP);
-    if(outputOn)
-      model.printMixtureDistributions();
-    mixture[i++] = model;
-    
-//    System.out.println("\n-----------------------------------------------------------------------\n");
-//    model = getModel(TMMConstants.CLASS_BOTH);
-//    model.printMixtureDistributions();
-//    mixture[i++] = model;
-    
+    TMixtureModel m2 = getModel(TMMConstants.CLASS_JUMP);
+    if (outputOn)
+      m2.printMixtureDistributions();
+
+    // System.out.println("\n-----------------------------------------------------------------------\n");
+    // model = getModel(TMMConstants.CLASS_BOTH);
+    // model.printMixtureDistributions();
+    // mixture[i++] = model;
+
     System.out.println("\n-----------------------------------------------------------------------\n");
-    model = getModel(TMMConstants.CLASS_BACKGROUND);
-    if(outputOn)
-      model.printMixtureDistributions();
-    mixture[i++] = model;
-    
+    TMixtureModel m3 = getModel(TMMConstants.CLASS_BACKGROUND);
+    if (outputOn)
+      m3.printMixtureDistributions();
+
+    TMixtureModel[] mixture = new TMixtureModel[] { m1, m2, m3 };
+
     System.out.println("\n-----------------------------------------------------------------------\n");
     return mixture;
   }
-  
+
   public static void main(String[] args) {
     TMMAbstractFactory factory = new MATLABFileTMMAbstractFactory();
     factory.getAllAvailableModels();

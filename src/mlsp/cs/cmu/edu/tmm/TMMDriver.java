@@ -2,14 +2,9 @@ package mlsp.cs.cmu.edu.tmm;
 
 public class TMMDriver extends RunTMMProcess {
   
-  private int delayInMilliseconds = 50;
-  private int blockSize = 10;
+  private int delayInMilliseconds = 0;
+  private int blockSize = 5;
 
-  public static void main(String[] args) {
-    TMMDriver driver = new TMMDriver();
-    driver.start();
-  }
-  
   public TMMDriver() {
     /**
      * Need some behavior here...
@@ -35,6 +30,9 @@ public class TMMDriver extends RunTMMProcess {
     System.out.println();
   }
   
-  
+  public static void main(String[] args) {
+    TMMDriver driver = new TMMDriver();
+    driver.start();
+  }
   
 }
