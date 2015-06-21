@@ -20,12 +20,6 @@ public class MFCCVector implements Iterator<Double> {
     this.iteration = 0;
   }
   
-  public MFCCVector(int dim, double[] vec) {
-    this.dimension = dim;
-    this.vector = vec;
-    this.iteration = 0;
-  }
-  
   public void setVector(double[] vec) {
     this.dimension = vec.length;
     this.vector = vec;
