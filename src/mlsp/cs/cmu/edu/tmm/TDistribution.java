@@ -1,5 +1,7 @@
 package mlsp.cs.cmu.edu.tmm;
 
+import java.text.DecimalFormat;
+import java.text.Format;
 import jebl.math.GammaFunction;
 
 public class TDistribution {
@@ -17,11 +19,6 @@ public class TDistribution {
   private double etaInverse;
 
   private double logScalingConstant;
-
-  public void printDistribution() {
-    System.out.println("Dimension: " + dimension);
-    //System.out.println("Means: " + ",".join(delimiter, elements));
-  }
 
   /**
    * Bare bones constructor.
@@ -115,6 +112,19 @@ public class TDistribution {
 
   public int getDimension() {
     return dimension;
+  }
+  
+  public void printDistribution() {
+    Format format = new DecimalFormat("##.###");
+    System.out.println("Dimension: " + dimension);
+    System.out.println("Eta: " + eta + " Inverse: " + etaInverse);
+    System.out.println("log Scaling Constant: " + logScalingConstant);
+    System.out.print("Means: ");
+    for (Double d : means)
+      System.out.print("\t" + format.format(d));
+    System.out.print("\nVars:  ");
+    for (Double d : variances)
+      System.out.print("\t" + format.format(d));
   }
 
 }

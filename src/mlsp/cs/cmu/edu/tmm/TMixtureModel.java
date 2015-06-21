@@ -74,5 +74,15 @@ public class TMixtureModel implements Iterator<TDistribution> {
   public TDistribution next() {
     return tDistributions[iteration++];
   }
+  
+  public void printMixtureDistributions() {
+    int i = 0;
+    for(TDistribution tDist : tDistributions) {
+      System.out.println("\nDist " + i + " with mixture weight: " + mixtureWeights[i] + " / log mixture weight: " + logMixtureWeights[i]);
+      tDist.printDistribution();
+      i++;
+      System.out.println();
+    }
+  }
 
 }

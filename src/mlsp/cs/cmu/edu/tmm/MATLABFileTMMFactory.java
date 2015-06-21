@@ -47,14 +47,14 @@ public class MATLABFileTMMFactory implements TMMFactory {
             System.out.println(mixtureComponentsMarker + ": " + numComponents);
           } else if (line.contains(mixtureWeightsMarker)) {
             String[] arr = scn.nextLine().split("\\s");
-            System.out.println(mixtureWeightsMarker + ": " + arr.toString());
+            System.out.println(mixtureWeightsMarker + "...");
             mixtureWeights = new double[numComponents];
             for (int i = 0; i < numComponents; i++) {
               mixtureWeights[i] = Double.parseDouble(arr[i]);
             }
           } else if (line.contains(etaValuesMarker)) {
             String[] arr = scn.nextLine().split("\\s");
-            System.out.println(etaValuesMarker + ": " + arr);
+            System.out.println(etaValuesMarker + "...");
             etaValues = new double[numComponents];
             for (int i = 0; i < numComponents; i++) {
               etaValues[i] = Double.parseDouble(arr[i]);
@@ -98,7 +98,18 @@ public class MATLABFileTMMFactory implements TMMFactory {
   
   public static void main(String[] args) {
     TMMFactory factory = new MATLABFileTMMFactory();
-    factory.generateTMM("Go.mfc.tmm", TMMConstants.CLASS_GO.getStringVal());
+    System.out.println("-----------------------------------------------------------------------");
+    TMixtureModel model = factory.generateTMM("Go.mfc.tmm", TMMConstants.CLASS_GO.getStringVal());
+    model.printMixtureDistributions();
+    System.out.println("\n-----------------------------------------------------------------------\n");
+    model = factory.generateTMM("Jump.mfc.tmm", TMMConstants.CLASS_JUMP.getStringVal());
+    model.printMixtureDistributions();
+    System.out.println("\n-----------------------------------------------------------------------\n");
+    model = factory.generateTMM("Go-Jump.mfc.tmm", TMMConstants.CLASS_BOTH.getStringVal());
+    model.printMixtureDistributions();
+    System.out.println("\n-----------------------------------------------------------------------\n");
+    model = factory.generateTMM("Others.mfc.tmm", TMMConstants.CLASS_BACKGROUND.getStringVal());
+    model.printMixtureDistributions();
   }
 
 
