@@ -27,7 +27,14 @@ public class TMMAlphaPosterior {
       alpha = computeAlpha(featureVector, mixtureModels, logPriors);
       double afterSum = alphaSum(alpha);
       alphaConvergence = Math.abs(afterSum - prevSum);
+      /* Old alphas become new log priors */
+      logPriors = alpha;
     }
+    
+    /* Divide by T feature vectors */
+    int T = featureVector.length;
+    for(int i = 0; i < N; i++) 
+      alpha[i] = alpha[i] / T;
     
     /* convergence or max iterations criteria met, return alpha */
     return alpha;
@@ -65,11 +72,6 @@ public class TMMAlphaPosterior {
       for (int i = 0; i < N; i++)
         alpha[i] += posterior[i];
     }
-    /* Divide by T feature vectors */
-    int T = featureVector.length;
-    for(int i = 0; i < N; i++) 
-      alpha[i] = alpha[i] / T;
-    
     /* Done! return the alpha vec */
     return alpha;
   }
