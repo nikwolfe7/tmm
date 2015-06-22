@@ -2,44 +2,90 @@ package mlsp.cs.cmu.edu.tmm;
 
 public class TMMAlphaPosterior {
   
+  private static int maxIterations = 1;
+  private static double convergenceCriteria = 1e-3;
+  
+  /**
+   * Calls computeAlpha K times to reach EM convergence...
+   */
+  public static double[] computeAlphaToConvergence(MFCCVector[] featureVector, TMixtureModel[] mixtureModels, double[] priors) {
+    int iterations = maxIterations;
+    
+    /* return alpha and prior vectors */
+    int N = mixtureModels.length;
+    double[] alpha = new double[N];
+    
+    /* precompute the log priors to save time */
+    double[] logPriors = new double[priors.length];
+    for(int i = 0; i < priors.length; i++)
+      logPriors[i] = Math.log(priors[i]);
+    
+    /* Call the computeAlpha() function K times for K iterations of EM */
+    double alphaConvergence = Double.MAX_VALUE;
+    while((alphaConvergence >= convergenceCriteria) && (iterations-- > 0)) {
+      double prevSum = alphaSum(alpha);
+      alpha = computeAlpha(featureVector, mixtureModels, logPriors);
+      double afterSum = alphaSum(alpha);
+      alphaConvergence = Math.abs(afterSum - prevSum);
+    }
+    
+    /* convergence or max iterations criteria met, return alpha */
+    return alpha;
+  }
+  
+  /* 
+   * Take the sum of the alphas so that when we subtract we get 
+   * the total change in value
+   * */
+  private static double alphaSum(double[] alpha) {
+    int sum = 0;
+    for(int i = 0; i < alpha.length; i++)
+      sum += alpha[i];
+    return sum;
+  }
+  
   /**
    * Class label posteriors for the mfcc vector block
    * 
    * @param featureVector
    * @param mixtureModels
+   * @param priors 
    * @return
    */
-  public static double[] computeAlpha(MFCCVector[] featureVector, TMixtureModel[] mixtureModels) {
+  private static double[] computeAlpha(MFCCVector[] featureVector, TMixtureModel[] mixtureModels, double[] logPriors) {
     /* return alpha and prior vectors */
     /* loop limit / array size */
     int N = mixtureModels.length;
     double[] alpha = new double[N];
-    double[] priors = new double[N];
-    /* uniform priors */
-    for (int i = 0; i < N; i++)
-      priors[i] = 1 / priors.length;
     /* iterate through feature vectors in the block */
     for (MFCCVector vec : featureVector) {
       /* calculate the posteriors */
-      double[] posterior = computePosterior(vec, mixtureModels, priors);
+      double[] posterior = computePosterior(vec, mixtureModels, logPriors);
       /* alpha = alpha + posterior */
       for (int i = 0; i < N; i++)
         alpha[i] += posterior[i];
     }
+    /* Divide by T feature vectors */
+    int T = featureVector.length;
+    for(int i = 0; i < N; i++) 
+      alpha[i] = alpha[i] / T;
+    
+    /* Done! return the alpha vec */
     return alpha;
   }
-
+  
   /**
    * Single posterior calculation for a collection of student-t mixture 
    * models with respect to a single MFCC vector 
+   * ***
+   * priors should be the log priors!!
    * 
    * @param vec
    * @param mixtureModels
    * @param priors
    * @return
    */
-  private static double[] computePosterior(MFCCVector vec, TMixtureModel[] mixtureModels,
-          double[] priors) {
+  private static double[] computePosterior(MFCCVector vec, TMixtureModel[] mixtureModels, double[] logPriors) {
     /* loop limit / array size */
     int N = mixtureModels.length;
     /* keep track of the max */
@@ -51,7 +97,8 @@ public class TMMAlphaPosterior {
     /* iterate through the models and get log probs */
     for (int i = 0; i < N; i++) {
       /* log probability for each TMM */
-      logP[i] = Math.log(priors[i]) + logMixtureProbability(vec, mixtureModels[i]);
+      /* NOTE: Thes are the LOG priors! */
+      logP[i] = logPriors[i] + logMixtureProbability(vec, mixtureModels[i]);
       /* keep track of the max */
       maxLogP = Math.max(maxLogP, logP[i]);
     }

@@ -30,6 +30,14 @@ public class TMMDriver extends RunTMMProcess {
     System.out.println();
   }
   
+  @Override
+  protected double[] getAlphaPriors(int numPriors) {
+    double[] arr = new double[numPriors];
+    for(int i = 0; i < arr.length; i++)
+      arr[i] = 1 / arr.length;
+    return arr;
+  }
+  
   public static void main(String[] args) {
     TMMDriver driver = new TMMDriver();
     driver.start();

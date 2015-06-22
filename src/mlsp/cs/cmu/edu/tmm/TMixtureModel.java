@@ -53,7 +53,7 @@ public class TMixtureModel implements Iterator<TDistribution> {
   
   public double getLogMixtureWeight(int component) {
     if(component < numComponents)
-      return mixtureWeights[component];
+      return logMixtureWeights[component];
     else 
       return -1;
   }
