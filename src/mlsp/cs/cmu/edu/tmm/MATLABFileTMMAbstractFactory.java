@@ -19,14 +19,14 @@ public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
   @Override
   public TMixtureModel[] getAllAvailableModels() {
     System.out.println("-----------------------------------------------------------------------\n");
-    TMixtureModel m1 = getModel(TMMConstants.CLASS_GO);
+    TMixtureModel go = getModel(TMMConstants.CLASS_GO);
     if (outputOn)
-      m1.printMixtureDistributions();
+      go.printMixtureDistributions();
 
     System.out.println("\n-----------------------------------------------------------------------\n");
-    TMixtureModel m2 = getModel(TMMConstants.CLASS_JUMP);
+    TMixtureModel jump = getModel(TMMConstants.CLASS_JUMP);
     if (outputOn)
-      m2.printMixtureDistributions();
+      jump.printMixtureDistributions();
 
     // System.out.println("\n-----------------------------------------------------------------------\n");
     // model = getModel(TMMConstants.CLASS_BOTH);
@@ -34,11 +34,11 @@ public class MATLABFileTMMAbstractFactory implements TMMAbstractFactory {
     // mixture[i++] = model;
 
     System.out.println("\n-----------------------------------------------------------------------\n");
-    TMixtureModel m3 = getModel(TMMConstants.CLASS_BACKGROUND);
+    TMixtureModel bg = getModel(TMMConstants.CLASS_BACKGROUND);
     if (outputOn)
-      m3.printMixtureDistributions();
+      bg.printMixtureDistributions();
 
-    TMixtureModel[] mixture = new TMixtureModel[] { m1, m2, m3 };
+    TMixtureModel[] mixture = new TMixtureModel[] { go, jump, bg };
 
     System.out.println("\n-----------------------------------------------------------------------\n");
     return mixture;
