@@ -4,7 +4,6 @@ public abstract class RunTMMProcess extends Thread {
 
   @Override
   public final void run() {
-    
     TMMAbstractFactory factory = getTMMAbstractFactory();
     MFCCBlockStream mfccStream = getMFCCBlockStream();
     TMixtureModel[] mixtureModels = factory.getAllAvailableModels();

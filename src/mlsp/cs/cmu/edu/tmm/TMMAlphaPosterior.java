@@ -45,7 +45,7 @@ public class TMMAlphaPosterior {
    * the total change in value
    * */
   private static double alphaSum(double[] alpha) {
-    int sum = 0;
+    double sum = 0;
     for(int i = 0; i < alpha.length; i++)
       sum += alpha[i];
     return sum;
