@@ -119,8 +119,8 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
   }
 
   public static void main(String[] args) {
-    MFCCBlockStream factory = new MFCCBlockStream("./features/My.mfc");
-    factory.setPulseTime(10);
+    MFCCBlockStream factory = new MFCCBlockStream("./features/expanded_mfccs_38_dim.mfc");
+    factory.setPulseTime(100);
     for (MFCCVector[] block : factory) {
       for (MFCCVector vec : block) {
         System.out.print("MFCC:\t");

@@ -18,8 +18,9 @@ public class TMMDriver extends RunTMMProcess {
 
   @Override
   protected MFCCBlockStream getMFCCBlockStream() {
-    MFCCBlockStream stream = new MFCCBlockStream("./features/My.mfc", blockSize);
-    stream.setPulseTime(delayInMilliseconds);
+    //MFCCBlockStream stream = new MFCCBlockStream("./features/My.mfc", blockSize);
+    MFCCBlockStream stream = new MFCCBlockStream("./features/expanded_mfccs_38_dim.mfc");
+    stream.setPulseTime(50);
     return stream;
   }
 
