@@ -31,7 +31,7 @@ public class TMMDriver extends RunTMMProcess {
   }
   
   @Override
-  protected double[] getAlphaPriors(int numPriors) {
+  protected double[] getUniformPriors(int numPriors) {
     double[] arr = new double[numPriors];
     for(int i = 0; i < arr.length; i++)
       arr[i] = 1 / arr.length;

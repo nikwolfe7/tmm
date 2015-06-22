@@ -8,7 +8,7 @@ public abstract class RunTMMProcess extends Thread {
     TMMAbstractFactory factory = getTMMAbstractFactory();
     MFCCBlockStream mfccStream = getMFCCBlockStream();
     TMixtureModel[] mixtureModels = factory.getAllAvailableModels();
-    double[] priors = getAlphaPriors(mixtureModels.length);
+    double[] priors = getUniformPriors(mixtureModels.length);
     while (!Thread.currentThread().isInterrupted()) {
       for (MFCCVector[] featureVector : mfccStream) {
         double[] alpha = TMMAlphaPosterior.computeAlphaToConvergence(featureVector, mixtureModels, priors);
@@ -18,7 +18,7 @@ public abstract class RunTMMProcess extends Thread {
     }
   }
 
-  protected abstract double[] getAlphaPriors(int length);
+  protected abstract double[] getUniformPriors(int length);
 
   protected abstract TMMAbstractFactory getTMMAbstractFactory();
 
