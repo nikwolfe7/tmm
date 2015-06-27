@@ -1,0 +1,93 @@
+Given X = x1 ... xT
+
+1) Kmean(X,N)  -->  {mu[1..N]}, {It, t = 1..T}
+
+2) Initialize TMM
+    # Initialize means, mixws and etas
+    for n = 1 : N {
+        mean[n] = mu[n]   --- codewords returned by Kmeans
+        mixw[n] = 1/N   --- Uniform
+        eta[n] = 500    --- large number
+        var[n] = 0   --- Initially set all to 0
+        count[n] = 0 
+    }
+    # Initialize variances as the variances of the clusters returned by Kmeans
+    for t = 1 : T {
+        var[n] += (x[t] - mean[It]) * (x[t] - mean[It])   --- Use the mean of the component indexed by It
+        count[It] = count[It] + 1   ---- Keep count
+    }
+    for n = 1 : N {
+        var[n] /= (count[It] - 1)  
+    }
+
+3) EM!!!!!!!!!!!!!!!!!!!!!!!!
+    for iter = 1 : NUMITER  { -------- We could use any termination condition, e.g. totallogprob must converge
+        # Initialize various things
+        mean_new[n=1..N] = 0,  var_new[n=1..N] = 0   ---- These are vectors
+        mixw_new[n=1..N] = 0  --- This is scalar
+        sumweight[1..N] = 0, etaconst[n=1..N] = 0    ---- Other variables we will use. These are not parameters
+
+        # for updating the mean pt 1
+        totallogprob = 0
+        for t = 1 : T {# loop through all the training data
+        	# logprob is the total log prob of the vector
+            compute_posteriors(xt, TMM)   -->  logprob, posterior[n=1..N], u[1..N]  --- Note posterior and u are specific to x[t]
+            totallogprob += logprob
+            weight[n=1..N] = posterior[n] * u[n]  
+            etaconst[n=1..N] += posterior[n] * (log(u[n]) - u[n])
+
+            mixw_new[n=1..N] += posterior[n]
+            mean_new[n=1..N] += weight[n] * x[t]  ---- Vector ops
+            sumweight[n] += weight[n]
+
+            # check that totallogprob has increased
+            # update the logscaling constant in the TDistribution
+        } 
+
+        # remember that each element of mean_new[] or mean[] is the D dimensionality of your MFCC vectors in training data
+        for n = 1 : N {# loop through the 64 T-distributions
+            mean_new[n] = mean_new[n] / sumweight[n]
+        }
+
+        # remember that each element of var_new[] or var[] is the D dimensionality of your MFCC vectors in training data
+        # for updating the variance 
+        for t = 1 : T {# loop through the training data
+            compute_posteriors(xt, TMM)   -->  posterior[n=1..N], u[1..N]  --- Note posterior and u are specific to x[t]
+            weight[n=1..N] = posterior[n] * u[n]  
+            var_new[n=1..N] += weight[n] * (x[t] - mean_new[n]) * (x[t] - mean_new[n])  ---- Vector ops (if you try this in the above loop it may be suboptimal but "should" be twice as fast -- but you would be using mean[n] NOT mean_new[n])
+        }
+
+        # updating mean pt 2 / variance, eta, mixture weights
+        for n = 1 : N { # loop through the 64 T-distributions
+
+            etaconst[n] /= mixw_new[n]
+
+            mean[n] = mean_new[n]
+            var[n] = var_new[n] / sumweight[n]
+            # ALTERNATE FROM PEEL AND MCLACHLAN :   var[n] = var_new[n] / mixw_new[n]
+            mixw[n] = mixw_new[n] / T
+
+            eta[n] = solveforeta(etaconst[n], TMM[n])   ---- TMM[n] is the n-th T in the mixture
+        }
+    }
+
+
+    # solve for eta
+    solveforeta (etaconst, T) {
+        etaconst = etaconst + 1 + digamma((T.eta + T.dim)/2) - log((T.eta + T.dim)/2)
+        bsteta = 0;
+        mincost = abs(etacost(bsteta, etaconst))
+        for eta = 0 : 0.0001: 500 {       --- Need a real optimization algo here, this is a linear scan 
+            thisetacost = abs(etacost(eta, etaconst))
+            if (thisetacost < mincost){
+                mincost = thisetacost
+                bsteta = eta
+            }
+        }
+
+        return bsteta
+    }
+
+    etacost(eta, etaconst){
+        return log(eta/2) - digamma(eta/2)) + etaconst
+    }

@@ -2,7 +2,7 @@ package mlsp.cs.cmu.edu.tmm;
 
 public class TMMAlphaPosterior {
   
-  private static int maxIterations = 1;
+  private static int maxIterations = 3;
   private static double convergenceCriteria = 1e-3;
   
   /**
@@ -117,7 +117,7 @@ public class TMMAlphaPosterior {
       posteriors[i] = prob[i] / totalProbability;
     }
     /* finished! return posteriors */
-    return posteriors;
+    return posteriors; 
   }
 
   /**
@@ -140,6 +140,8 @@ public class TMMAlphaPosterior {
    for(int i = 0; i < K; i++) {
      TDistribution pdf = tMixtureModel.getTDistribution(i);
      double tmmLogPrior = tMixtureModel.getLogMixtureWeight(i);
+     
+     /*  logP[i], u[i] = logProbability_and_u (vec, pdf) */
      logP[i] = logProbability(vec, pdf) + tmmLogPrior;
      /* keep track of the max */
      maxLogP = Math.max(maxLogP, logP[i]);
@@ -147,8 +149,15 @@ public class TMMAlphaPosterior {
    /* calc total probability */
    double totalProbability = 0;
    for(int i = 0; i < K; i++) {
+     /* NEW STUFF
+      * prob  [i] = Math.exp(logP[i] - maxLogp);
+      * totalprobability += prob[i];
+      */
      totalProbability += Math.exp(logP[i] - maxLogP);
    }
+   /* NEW STUFF
+    * for (int i = 0; i < K; i++) posterior[i] = prob[i] / totalProbability;
+    */
    logProb = maxLogP + Math.log(totalProbability);
    return logProb;
   }
@@ -174,6 +183,8 @@ public class TMMAlphaPosterior {
       double diff = vec.getCoefficient(i) - pdf.getMean(i);
       mahalanobisDistance += diff * diff * pdf.getInverseVariance(i);
     }
+
+    /* u = (pdf.eta + pdf.dim) / (pdf.eta + mahalanobisDistance) */
     logProb -= (pdf.getEta() + D) * 0.5 * Math.log(1 + mahalanobisDistance * pdf.getInverseEta());
     return logProb;
   }

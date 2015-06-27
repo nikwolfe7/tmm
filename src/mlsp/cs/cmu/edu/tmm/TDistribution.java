@@ -52,7 +52,7 @@ public class TDistribution {
       setVariance(i, variances[i]);
     }
     setEta(eta);
-    calculateLogScalingConstant();
+    //calculateLogScalingConstant();
   }
 
   public void setMean(int index, double mean) {
@@ -71,6 +71,7 @@ public class TDistribution {
     if (index < variances.length) {
       variances[index] = variance;
       inverseVariances[index] = 1 / variance;
+      calculateLogScalingConstant();
     }
   }
 
@@ -88,6 +89,7 @@ public class TDistribution {
   public void setEta(double eta) {
     this.eta = eta;
     this.etaInverse = 1 / eta;
+    calculateLogScalingConstant();
   }
 
   public double getEta() {
@@ -97,7 +99,7 @@ public class TDistribution {
   public double getInverseEta() {
     return etaInverse;
   }
-
+  
   public void calculateLogScalingConstant() {
     logScalingConstant = 0;
     for (int i = 0; i < dimension; i++) {
