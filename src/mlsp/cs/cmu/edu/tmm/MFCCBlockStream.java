@@ -25,7 +25,7 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
     loadMFCCsFromFile(filename);
   }
   
-  MFCCBlockStream(String filename) {
+  public MFCCBlockStream(String filename) {
     this.blockSize = TMMConstants.MFCC_BLOCK_SIZE.getValue();
     this.liveStream = false;
     this.mfccs = new LinkedBlockingQueue<MFCCVector>();
@@ -120,7 +120,7 @@ public class MFCCBlockStream implements Iterable<MFCCVector[]>, Iterator<MFCCVec
 
   public static void main(String[] args) {
     MFCCBlockStream factory = new MFCCBlockStream("./features/expanded_mfccs_38_dim.mfc");
-    factory.setPulseTime(100);
+    //factory.setPulseTime(100);
     for (MFCCVector[] block : factory) {
       for (MFCCVector vec : block) {
         System.out.print("MFCC:\t");

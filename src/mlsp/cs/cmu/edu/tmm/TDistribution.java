@@ -3,12 +3,11 @@ package mlsp.cs.cmu.edu.tmm;
 import java.text.DecimalFormat;
 import java.text.Format;
 
-import cern.jet.stat.Gamma;
-import jebl.math.GammaFunction;
+import org.apache.commons.math3.special.Gamma;
 
 public class TDistribution {
 
-  private final int dimension;
+  private int dimension;
 
   private double[] means;
 
@@ -52,12 +51,17 @@ public class TDistribution {
       setVariance(i, variances[i]);
     }
     setEta(eta);
-    //calculateLogScalingConstant();
+    update();
   }
 
   public void setMean(int index, double mean) {
     if (index < means.length)
       means[index] = mean;
+  }
+  
+  public void setMean(double[] means) {
+    dimension = means.length;
+    this.means = means;
   }
 
   public double getMean(int index) {
@@ -66,15 +70,22 @@ public class TDistribution {
     else
       return -1;
   }
-
+  
   public void setVariance(int index, double variance) {
     if (index < variances.length) {
       variances[index] = variance;
       inverseVariances[index] = 1 / variance;
-      calculateLogScalingConstant();
     }
   }
-
+  
+  public void setVariance(double[] vec) {
+    dimension = vec.length;
+    for(int i = 0; i < vec.length; i++) {
+      setVariance(i, vec[i]);
+    }
+    calculateLogScalingConstant();
+  }
+  
   public double getVariance(int index) {
     if (index < variances.length)
       return variances[index];
@@ -100,6 +111,11 @@ public class TDistribution {
     return etaInverse;
   }
   
+  public void update() {
+    calculateLogScalingConstant();
+    /* anything else? */
+  }
+  
   public void calculateLogScalingConstant() {
     logScalingConstant = 0;
     for (int i = 0; i < dimension; i++) {
@@ -111,8 +127,7 @@ public class TDistribution {
   }
   
   private double logGamma(double arg) {
-    return Gamma.logGamma(arg); // colt
-//    return GammaFunction.lnGamma(arg); // jebl
+    return Gamma.logGamma(arg);
   }
   
   public double getLogScalingConstant() {

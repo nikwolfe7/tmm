@@ -1,24 +1,66 @@
-Given X = x1 ... xT
+Given traning data -- an array of MFCCVectors for a particular class label,
+e.g. GO or JUMP or BOTH
 
-1) Kmean(X,N)  -->  {mu[1..N]}, {It, t = 1..T}
+Training Data: X = x1 ... xT
 
-2) Initialize TMM
+For the entire set of MFCCVectors, run K-means to convergence, calculating
+the mean centers of NUM_T_DISTRIBUTIONS different clusters. This will return a matrix
+of mean values mu[], each with dim D for the size of the MFCCVectors.
+
+1) Kmean(X,N)  -->  {mu[1..N]}, {It, t = 1..T} 
+
+Returns:
+It == the cluster index for a given vector (there will be T of these for T MFCCVectors)
+mu[1...N] the means for the NUM_T_DISTRIBUTIONS clusters
+
+This gives us back a set of means, each of dimension D for the size of the MFCCVectors. 
+However, we believe that "GO" is a word represented by a mixture (NUM_T_DISTRIBUTIONS) of 
+student t-Distributions, each with their individual parameters (mean[], var[], eta). 
+For each t-Distribution, we associate a weight w to represent its contribution to the 
+mixture. 
+
+We therefore want to use these means[D] as a starting point to re-estimate both
+the means themsleves, the variance, and the eta values. 
+
+2) Initialize TMMs
+	We initialize the means[D] to the values returned by te k-means algo
+	Everything else will be set to some standard initialization. Etas will
+	start as some improbably huge number, the mixture weights are uniform,
+	and the variances are initialized to zero (though we will use the data
+	to make a better estimate). we use count to estimate the variances. 
+    
     # Initialize means, mixws and etas
-    for n = 1 : N {
-        mean[n] = mu[n]   --- codewords returned by Kmeans
-        mixw[n] = 1/N   --- Uniform
+    for n = 1 : N { // N is size of the T-mixture, NUM_T_DISTRIBUTIONS
+        mean[n][D] = mu[n][D]   --- codewords returned by Kmeans
+        mixw[n][D] = 1/N   --- Uniform
         eta[n] = 500    --- large number
-        var[n] = 0   --- Initially set all to 0
-        count[n] = 0 
+        var[n][D] = 0   --- Initially set all to 0
+        count[n] = 0 -- how many MFCC vectors are attributed to each component (N is size of NUM_T_DISTRIBUTIONS)
     }
+    
+    # We estimate the variances by taking the sum of the distances of each point (MFCCVector is a point)
+    # in each cluster to the mean of that cluster and dividing by the count of the number of vectors 
+    # belonging to each cluster. 
+    
     # Initialize variances as the variances of the clusters returned by Kmeans
-    for t = 1 : T {
+    for t = 1 : T { // T is the number of MFCCVectors in the training data
+    
+    	# 'It' is the index of the cluster which the individual MFCCVector belongs to
+    	# x[t] is the individual training vector
+    	# mean[t] is the mean of the cluster (from K-means) pointed to by 'It'
+    	# this is a variance vector for a SINGLE t-Distribution - of which we have NUM_T_DISTRIBUTIONS
         var[n] += (x[t] - mean[It]) * (x[t] - mean[It])   --- Use the mean of the component indexed by It
-        count[It] = count[It] + 1   ---- Keep count
+        
+        # this is just an array keeping track of the counts of vectors belonging to each group
+        count[n] += 1   ---- Keep count -- this is how many vectors belong to each group
     }
-    for n = 1 : N {
-        var[n] /= (count[It] - 1)  
+    # Divide by the count for each index in the mixture...
+    for n = 1 : N { // N is size of the T-mixture, NUM_T_DISTRIBUTIONS
+    	# var[n] is the vector of dim D (size of MFCC)
+        var[n] /= (count[t] - 1)  
     }
+    
+    The end result should be an array of TDistribution objects which is packed with the parameters 
 
 3) EM!!!!!!!!!!!!!!!!!!!!!!!!
     for iter = 1 : NUMITER  { -------- We could use any termination condition, e.g. totallogprob must converge
