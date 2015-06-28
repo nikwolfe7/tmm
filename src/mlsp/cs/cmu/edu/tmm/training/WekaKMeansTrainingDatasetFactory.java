@@ -4,6 +4,6 @@ import weka.core.Instances;
 
 public interface WekaKMeansTrainingDatasetFactory {
   
-  public Instances getDataset(String... filenames); 
+  public Instances getDataset(String... csvFilenames); 
 
 }

@@ -8,11 +8,11 @@ import weka.core.converters.CSVLoader;
 public class MFCCWekaKMeansTrainingDatasetFactory implements WekaKMeansTrainingDatasetFactory {
 
   @Override
-  public Instances getDataset(String... filenames) {
+  public Instances getDataset(String... csvFilenames) {
     Instances combinedInstances = null;
     boolean first = true;
     int index = 0;
-    for (String file : filenames) {
+    for (String file : csvFilenames) {
       System.out.println("Reading file: " + (++index) + ": " + file + "...");
       CSVLoader loader = new CSVLoader();
       try {
