@@ -12,19 +12,19 @@ import weka.clusterers.SimpleKMeans;
 import weka.core.Instance;
 import weka.core.Instances;
 
-public class MFCCWekaKMeansClusterer implements WekaKMeansClusteringWrapper {
+public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
 
   private int numClusters = TMMTrainingConfig.NUM_T_DISTRIBUTIONS.getIntValue();
   private int numIterations = TMMTrainingConfig.NUM_ITERATIONS.getIntValue();
-  private WekaKMeansTrainingDatasetFactory datasetFactory;
-  private SimpleKMeans clusterer;
-  private Instances dataset;
-  private double[][] kMeans;
-  private double[] numVectorsPerCluster;
+  private WekaKMeansTrainingDatasetFactory datasetFactory = null;
+  private SimpleKMeans clusterer = null;
+  private Instances dataset = null;
+  private double[][] kMeans = null;
+  private double[] numVectorsPerCluster = null;
   private List<Pair<MFCCVector, Integer>> vectorAssignments;
   
-  
-  public MFCCWekaKMeansClusterer(String... csvFilenames) {
+  @Override
+  public void initialize(String... csvFilenames) {
     try {
       /* loading the data */
       print("Loading dataset...");
@@ -37,6 +37,7 @@ public class MFCCWekaKMeansClusterer implements WekaKMeansClusteringWrapper {
       clusterer.setNumClusters(numClusters);
       clusterer.setMaxIterations(numIterations);
       clusterer.setPreserveInstancesOrder(true);
+      clusterer.setDisplayStdDevs(true);
       print("Dataset loaded. Running k-Means with " + numClusters + " clusters for "
               + numIterations + " iterations...");
       
@@ -51,10 +52,27 @@ public class MFCCWekaKMeansClusterer implements WekaKMeansClusteringWrapper {
       this.vectorAssignments = buildVectorAssignments();
       this.numVectorsPerCluster = buildVectorsPerClusterList();
       this.kMeans = buildCentroidMatrix();
+      Instances stdDevs = clusterer.getClusterStandardDevs();
+      System.out.println(stdDevs);
       
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+  
+  @Override
+  public double[] getVectorCountsPerCluster() {
+    return numVectorsPerCluster;
+  }
+  
+  @Override
+  public List<Pair<MFCCVector, Integer>> getVectorAssignments() {
+   return vectorAssignments;
+  }
+  
+  @Override
+  public double[][] getKMeans() {
+    return kMeans;
   }
 
   private double[] buildVectorsPerClusterList() {
@@ -94,31 +112,17 @@ public class MFCCWekaKMeansClusterer implements WekaKMeansClusteringWrapper {
   private void print(Object s) {
     System.out.println(s.toString());
   }
-  
-  @Override
-  public double[] getVectorNumbersPerCluster() {
-    return numVectorsPerCluster;
-  }
-  
-  @Override
-  public List<Pair<MFCCVector, Integer>> getVectorAssignments() {
-   return vectorAssignments;
-  }
-  
-  @Override
-  public double[][] getKMeans() {
-    return kMeans;
-  }
 
   public static void main(String[] args) {
     String file1 = "./features/expanded_mfccs_26_dim.csv";
-    String[] data = new String[10];
+    String[] data = new String[1];
     for(int i = 0; i < data.length; i++) {
       data[i] = file1;
     }
-    WekaKMeansClusteringWrapper wekaClusterer = new MFCCWekaKMeansClusterer(data);
+    KMeansClusteringWrapper wekaClusterer = new MFCCWekaKMeansClusterer();
+    wekaClusterer.initialize(data);
     System.out.println("kmeans: " + wekaClusterer.getKMeans());
-    System.out.println("numberspercluster: " + wekaClusterer.getVectorNumbersPerCluster());
+    System.out.println("numberspercluster: " + wekaClusterer.getVectorCountsPerCluster());
     System.out.println("assignments: " + wekaClusterer.getVectorAssignments());
   }
 

@@ -40,7 +40,7 @@ the means themsleves, the variance, and the eta values.
     
     # We estimate the variances by taking the sum of the distances of each point (MFCCVector is a point)
     # in each cluster to the mean of that cluster and dividing by the count of the number of vectors 
-    # belonging to each cluster. 
+    # belonging to each cluster.
     
     # Initialize variances as the variances of the clusters returned by Kmeans
     for t = 1 : T { // T is the number of MFCCVectors in the training data
@@ -49,6 +49,7 @@ the means themsleves, the variance, and the eta values.
     	# x[t] is the individual training vector
     	# mean[t] is the mean of the cluster (from K-means) pointed to by 'It'
     	# this is a variance vector for a SINGLE t-Distribution - of which we have NUM_T_DISTRIBUTIONS
+    	
         var[n] += (x[t] - mean[It]) * (x[t] - mean[It])   --- Use the mean of the component indexed by It
         
         # this is just an array keeping track of the counts of vectors belonging to each group
