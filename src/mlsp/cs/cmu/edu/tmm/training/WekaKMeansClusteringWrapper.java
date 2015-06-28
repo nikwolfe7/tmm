@@ -6,6 +6,4 @@ public interface WekaKMeansClusteringWrapper {
   
   public double[][] getKMeans();
   
-  public double[][] getKVariances();
-  
 }

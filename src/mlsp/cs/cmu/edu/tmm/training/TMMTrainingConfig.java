@@ -2,7 +2,7 @@ package mlsp.cs.cmu.edu.tmm.training;
 
 public enum TMMTrainingConfig {
   
-  NUM_T_DISTRIBUTIONS(30,30),
+  NUM_T_DISTRIBUTIONS(64,64),
   NUM_ITERATIONS(10,10),
   CONVERGENCE_CRITERIA(0,1e-10);
   
