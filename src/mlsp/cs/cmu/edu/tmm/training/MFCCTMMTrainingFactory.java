@@ -6,17 +6,23 @@ import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
 public class MFCCTMMTrainingFactory implements TMMTrainingFactory {
   
-  private TDistributionInitializationFactory factory;
-  private KMeansClusteringWrapper kMeans;
+  private TDistributionInitializationFactory factory = null;
+  private KMeansClusteringWrapper kMeans = null;
   
   @Override
   public TMixtureModel getInitializedModel(TMMConstants enumVal, String... csvFiles) {
-    this.kMeans =  new MFCCWekaKMeansClusterer();
+    if(kMeans == null)
+      this.kMeans =  new MFCCWekaKMeansClusterer();
     this.factory = new MFCCTDistributionInitializationFactory(kMeans);
     TDistribution[] tDists = factory.getInitializedTDistributions(csvFiles);
     double[] mixtureWeights = getUniformMixtureWeights(tDists.length);
     TMixtureModel TMM = new TMixtureModel(enumVal.getStringVal(), tDists, mixtureWeights);
     return TMM;
+  }
+  
+  @Override
+  public KMeansClusteringWrapper getKMeansClusteringWrapper() {
+    return kMeans;
   }
   
   private double[] getUniformMixtureWeights(int size) {
@@ -28,8 +34,8 @@ public class MFCCTMMTrainingFactory implements TMMTrainingFactory {
   }
   
   public static void main(String[] args) {
-    String file1 = "./features/expanded_mfccs_26_dim.csv";
-    String[] data = new String[1];
+    String file1 = TMMConstants.TEST_MFCC_FILE.getStringVal();
+    String[] data = new String[10];
     for(int i = 0; i < data.length; i++) {
       data[i] = file1;
     }
@@ -37,6 +43,10 @@ public class MFCCTMMTrainingFactory implements TMMTrainingFactory {
     TMixtureModel goModel = factory.getInitializedModel(TMMConstants.CLASS_GO, data);
     goModel.printMixtureDistributions();
   }
+
+  
+
+  
 
 
 }

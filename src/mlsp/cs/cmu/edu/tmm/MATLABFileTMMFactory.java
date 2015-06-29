@@ -12,13 +12,14 @@ import java.util.Scanner;
  */
 public class MATLABFileTMMFactory implements TMMFactory {
   
-  private String tmmExt = ".tmm";
-  private String dimensionMarker = "# Dimension of data";
-  private String mixtureComponentsMarker = "# Number of student-t components in mixture";
-  private String mixtureWeightsMarker = "# mixture weights for all student-t component densities";
-  private String etaValuesMarker = "# eta values for all student-t component densities";
-  private String meansMarker = "# means for all student-t component densities";
-  private String variancesMarker = "# variances for all student-t component densities";
+  public static String tmmExt = ".tmm";
+  public static String dimensionMarker = "# Dimension of data";
+  public static String mixtureComponentsMarker = "# Number of student-t components in mixture";
+  public static String mixtureWeightsMarker = "# mixture weights for all student-t component densities";
+  public static String etaValuesMarker = "# eta values for all student-t component densities";
+  public static String meansMarker = "# means for all student-t component densities";
+  public static String variancesMarker = "# variances for all student-t component densities";
+  public static String logScalingConstantsMarker = "# Log scaling constants for all student-t component densities";
 
   public MATLABFileTMMFactory() {}
 

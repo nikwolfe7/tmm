@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.math3.util.Pair;
 
 import mlsp.cs.cmu.edu.tmm.MFCCVector;
+import mlsp.cs.cmu.edu.tmm.TMMConstants;
 import weka.clusterers.SimpleKMeans;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -134,7 +135,7 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
   }
 
   public static void main(String[] args) {
-    String file1 = "./features/expanded_mfccs_26_dim.csv";
+    String file1 = TMMConstants.TEST_MFCC_FILE.getStringVal();
     String[] data = new String[1];
     for(int i = 0; i < data.length; i++) {
       data[i] = file1;

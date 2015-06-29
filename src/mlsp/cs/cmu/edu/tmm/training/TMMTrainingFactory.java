@@ -16,4 +16,12 @@ public interface TMMTrainingFactory {
    */
   public TMixtureModel getInitializedModel(TMMConstants enumVal, String... csvFiles); 
   
+  /**
+   * Retrieves the wrapper used in the initialization to get other
+   * components created in {@link #getInitializedModel(TMMConstants, String...)}
+   * 
+   * @return
+   */
+  public KMeansClusteringWrapper getKMeansClusteringWrapper();
+  
 }

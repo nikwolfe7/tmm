@@ -2,7 +2,7 @@ package mlsp.cs.cmu.edu.tmm;
 
 import java.util.Iterator;
 
-public class TMixtureModel implements Iterator<TDistribution> {
+public class TMixtureModel implements Iterator<TDistribution>, Iterable<TDistribution> {
   
   private final int numComponents;
   private TDistribution[] tDistributions;
@@ -31,6 +31,10 @@ public class TMixtureModel implements Iterator<TDistribution> {
       this.mixtureWeights[i] = mixtureWeights[i];
       this.logMixtureWeights[i] = Math.log(mixtureWeights[i]);
     }
+  }
+  
+  public int getNumComponents() {
+    return numComponents;
   }
   
   public String getMixtureClassLabel() {
@@ -64,10 +68,12 @@ public class TMixtureModel implements Iterator<TDistribution> {
   
   @Override
   public boolean hasNext() {
-    if(iteration >= numComponents) 
+    if(iteration >= numComponents) {
+      resetIteration();
       return false;
-    else 
+    } else {
       return true;
+    }
   }
 
   @Override
@@ -75,14 +81,20 @@ public class TMixtureModel implements Iterator<TDistribution> {
     return tDistributions[iteration++];
   }
   
+  @Override
+  public Iterator<TDistribution> iterator() {
+    return this;
+  }
+  
   public void printMixtureDistributions() {
     int i = 0;
-    for(TDistribution tDist : tDistributions) {
-      System.out.println("\nDist " + i + " with mixture weight: " + mixtureWeights[i] + " / log mixture weight: " + logMixtureWeights[i]);
+    for (TDistribution tDist : tDistributions) {
+      System.out.println("\nDist " + i + " with mixture weight: " + mixtureWeights[i]
+              + " / log mixture weight: " + logMixtureWeights[i]);
       tDist.printDistribution();
       i++;
       System.out.println();
     }
   }
-
+  
 }

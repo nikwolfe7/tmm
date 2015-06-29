@@ -1,6 +1,7 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
 import mlsp.cs.cmu.edu.tmm.TDistribution;
+import mlsp.cs.cmu.edu.tmm.TMMConstants;
 
 public class MFCCTDistributionInitializationFactory implements TDistributionInitializationFactory {
 
@@ -32,7 +33,7 @@ public class MFCCTDistributionInitializationFactory implements TDistributionInit
   }
   
   public static void main(String[] args) {
-    String file1 = "./features/expanded_mfccs_26_dim.csv";
+    String file1 = TMMConstants.TEST_MFCC_FILE.getStringVal();
     String[] data = new String[1];
     for(int i = 0; i < data.length; i++) {
       data[i] = file1;
