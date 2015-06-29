@@ -53,7 +53,7 @@ public class TMMTrainingModule {
     /* Training complete! */
     printModelToFile();
   }
-
+  
   private void printModelToFile() {
     TMMWriter tmmWriter = new TMMWriter(mixtureModel, enumVal);
     System.out.println("Now printing model for " + enumVal.getStringVal() + " to file: "
@@ -64,7 +64,7 @@ public class TMMTrainingModule {
 
   public static void main(String[] args) {
     String file1 = TMMConstants.TEST_MFCC_FILE.getStringVal();
-    String[] data = new String[200];
+    String[] data = new String[10];
     for (int i = 0; i < data.length; i++) {
       data[i] = file1;
     }

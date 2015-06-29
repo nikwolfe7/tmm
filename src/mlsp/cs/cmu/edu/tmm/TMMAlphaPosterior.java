@@ -130,7 +130,7 @@ public class TMMAlphaPosterior {
    */
   private static double logMixtureProbability(MFCCVector vec, TMixtureModel tMixtureModel) {
    /* mixture components */
-   int K = vec.getDimensionality();
+   int K = tMixtureModel.getNumComponents();
    /* keep track of the max */
    double maxLogP = Double.NEGATIVE_INFINITY;
    /* log probabilities */
