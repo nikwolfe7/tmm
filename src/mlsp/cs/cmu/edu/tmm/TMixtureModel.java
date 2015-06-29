@@ -55,6 +55,13 @@ public class TMixtureModel implements Iterator<TDistribution>, Iterable<TDistrib
       return -1;
   }
   
+  public void setMixtureWeights(int index, double newWeight) {
+    if(index < mixtureWeights.length) {
+      mixtureWeights[index] = newWeight;
+      logMixtureWeights[index] = Math.log(newWeight);
+    }
+  }
+  
   public double getLogMixtureWeight(int component) {
     if(component < numComponents)
       return logMixtureWeights[component];
@@ -96,5 +103,7 @@ public class TMixtureModel implements Iterator<TDistribution>, Iterable<TDistrib
       System.out.println();
     }
   }
+
+  
   
 }

@@ -135,12 +135,12 @@ public class TMMAlphaPosterior {
    double maxLogP = Double.NEGATIVE_INFINITY;
    /* log probabilities */
    double logProb = 0;
+   /* temp array for posteriors */
    double[] logP = new double[K];
    /* cacluate log probs for vector */
    for(int i = 0; i < K; i++) {
      TDistribution pdf = tMixtureModel.getTDistribution(i);
      double tmmLogPrior = tMixtureModel.getLogMixtureWeight(i);
-     
      /*  logP[i], u[i] = logProbability_and_u (vec, pdf) */
      logP[i] = logProbability(vec, pdf) + tmmLogPrior;
      /* keep track of the max */

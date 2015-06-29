@@ -31,28 +31,78 @@ public class TMMTrainingModule {
     this.trainingData = kMeansWrapper.getVectorAssignments();
     int K = kMeansWrapper.getKMeans().length;
     int D = kMeansWrapper.getKMeans()[0].length; // crash!
+    int T = trainingData.size();
 
     int numIteration = 0;
     System.out.println("START EM TRAINING...");
     while(numIteration++ <= TMMTrainingConfig.EM_MAX_ITERATIONS.getIntValue()) {
-      System.out.println("Iteration " + numIteration + "...");
+      System.out.print("Iteration " + numIteration + "... ");
       double[][] meanNew = new double[K][D];
       double[][] varNew = new double[K][D];
       double[] mixtureWeightsNew = new double[K];
-      double[] etaConstant = new double[K];
+      double[] etaConstants = new double[K];
       double[] sumWeights = new double[K];
       
       double totalLogProbability = 0;
+      TrainingIteration iteration = new TrainingIteration();
+      iteration.setTMM(mixtureModel);
       for(Pair<MFCCVector, Integer> vector : trainingData) {
+        /* MFCC vector */
         MFCCVector xt = vector.getFirst();
+        iteration.setMFCC(xt);
         
+        /* Calcuate posteriors and sufficient statistics */
+        TMMTrainingUtil.getTrainingIteration(iteration);
+        double logProb = iteration.getLogProbability();
+        double[] posterior = iteration.getPosterior();
+        double[] uVec = iteration.getUVec();
         
+        /* Update means and variances */
+        totalLogProbability += logProb;
+        double[] weight = new double[K];
+        for(int n = 0; n < K; n++) {
+          /* weights */
+          weight[n] = posterior[n] * uVec[n];
+          /* eta constants */
+          etaConstants[n] = posterior[n] * (Math.log(uVec[n]) - uVec[n]);
+          /* update new mixture weights */
+          mixtureWeightsNew[n] += posterior[n];
+          /* sum the weights */
+          sumWeights[n] += weight[n];
+          /* update the mean and variance */
+          for(int t = 0; t < xt.getDimensionality(); t++) {
+            meanNew[n][t] = weight[n] * xt.getCoefficient(t);
+            /* THIS IS A HACK TO MAKE THINGS FASTER */
+            double oldMean = mixtureModel.getTDistribution(n).getMean(t);
+            varNew[n][t] += weight[n] * Math.pow((xt.getCoefficient(t) - oldMean),2);
+          }
+        }
         
+        /* update weights, variances and eta values */
+        for(int n = 0; n < K; n++) {
+          for(int t = 0; t < xt.getDimensionality(); t++) {
+            meanNew[n][t] = meanNew[n][t] / sumWeights[n];
+            varNew[n][t] = varNew[n][t] / sumWeights[n];
+          }
+          /* update means and variances in the TDistribution */
+          mixtureModel.getTDistribution(n).setMean(meanNew[n]);
+          mixtureModel.getTDistribution(n).setVariance(varNew[n]);
+          /* eta constants */
+          etaConstants[n] /= mixtureWeightsNew[n];
+          /* mixture weights */
+          mixtureModel.setMixtureWeights(n, mixtureWeightsNew[n] / T);
+          double newEta = TMMTrainingUtil.solveForEta(etaConstants[n], mixtureModel.getTDistribution(n));
+          mixtureModel.getTDistribution(n).setEta(newEta);
+        }
       }
+      System.out.println("Total Log Probability: " + totalLogProbability);
     }
+    System.out.println("Training finished!");
     /* Training complete! */
     printModelToFile();
   }
+  
+  
   
   private void printModelToFile() {
     TMMWriter tmmWriter = new TMMWriter(mixtureModel, enumVal);
