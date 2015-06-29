@@ -91,38 +91,38 @@ public class TMMTrainingUtil {
      * @param priors
      * @return
      */
-    private static double[] computePosterior(MFCCVector vec, TMixtureModel[] mixtureModels, double[] logPriors) {
-      /* loop limit / array size */
-      int N = mixtureModels.length;
+  private static double[] computePosterior(MFCCVector vec, TMixtureModel[] mixtureModels, double[] logPriors) {
+    /* loop limit / array size */
+    int N = mixtureModels.length;
+    /* keep track of the max */
+    double maxLogP = Double.NEGATIVE_INFINITY;
+    /* return posteriors */
+    double[] posteriors = new double[N];
+    /* log probabilities */
+    double[] logP = new double[N];
+    /* iterate through the models and get log probs */
+    for (int i = 0; i < N; i++) {
+      /* log probability for each TMM */
+      /* NOTE: Thes are the LOG priors! */
+      logP[i] = logPriors[i] + logMixtureProbability(vec, mixtureModels[i]);
       /* keep track of the max */
-      double maxLogP = Double.NEGATIVE_INFINITY;
-      /* return posteriors */
-      double[] posteriors = new double[N];
-      /* log probabilities */
-      double[] logP = new double[N];
-      /* iterate through the models and get log probs */
-      for (int i = 0; i < N; i++) {
-        /* log probability for each TMM */
-        /* NOTE: Thes are the LOG priors! */
-        logP[i] = logPriors[i] + logMixtureProbability(vec, mixtureModels[i]);
-        /* keep track of the max */
-        maxLogP = Math.max(maxLogP, logP[i]);
-      }
-      /* total probability */
-      double totalProbability = 0;
-      /* mixture probabilities */
-      double[] prob = new double[N];
-      for(int i = 0; i < N; i++) {
-        prob[i] = Math.exp(logP[i] - maxLogP);
-        totalProbability += prob[i];
-      }
-      /* update posteriors */
-      for(int i = 0; i < N; i++) {
-        posteriors[i] = prob[i] / totalProbability;
-      }
-      /* finished! return posteriors */
-      return posteriors; 
+      maxLogP = Math.max(maxLogP, logP[i]);
     }
+    /* total probability */
+    double totalProbability = 0;
+    /* mixture probabilities */
+    double[] prob = new double[N];
+    for (int i = 0; i < N; i++) {
+      prob[i] = Math.exp(logP[i] - maxLogP);
+      totalProbability += prob[i];
+    }
+    /* update posteriors */
+    for (int i = 0; i < N; i++) {
+      posteriors[i] = prob[i] / totalProbability;
+    }
+    /* finished! return posteriors */
+    return posteriors;
+  }
 
     /**
      * log mixture probability for an individual student-t mixture model

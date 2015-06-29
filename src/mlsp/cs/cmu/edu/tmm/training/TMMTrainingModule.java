@@ -42,14 +42,13 @@ public class TMMTrainingModule {
       double[] etaConstant = new double[K];
       double[] sumWeights = new double[K];
       
-      
-      
-      
-      
-      
-      
-      
-      
+      double totalLogProbability = 0;
+      for(Pair<MFCCVector, Integer> vector : trainingData) {
+        MFCCVector xt = vector.getFirst();
+        
+        
+        
+      }
     }
     /* Training complete! */
     printModelToFile();
