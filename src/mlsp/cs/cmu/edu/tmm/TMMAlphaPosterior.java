@@ -30,7 +30,7 @@ public class TMMAlphaPosterior {
       /* Old alphas become new log priors */
       logPriors = alpha;
     }
-    
+
     /* Divide by T feature vectors */
     int T = featureVector.length;
     for(int i = 0; i < N; i++) 
@@ -149,15 +149,8 @@ public class TMMAlphaPosterior {
    /* calc total probability */
    double totalProbability = 0;
    for(int i = 0; i < K; i++) {
-     /* NEW STUFF
-      * prob  [i] = Math.exp(logP[i] - maxLogp);
-      * totalprobability += prob[i];
-      */
      totalProbability += Math.exp(logP[i] - maxLogP);
    }
-   /* NEW STUFF
-    * for (int i = 0; i < K; i++) posterior[i] = prob[i] / totalProbability;
-    */
    logProb = maxLogP + Math.log(totalProbability);
    return logProb;
   }
@@ -183,8 +176,6 @@ public class TMMAlphaPosterior {
       double diff = vec.getCoefficient(i) - pdf.getMean(i);
       mahalanobisDistance += diff * diff * pdf.getInverseVariance(i);
     }
-
-    /* u = (pdf.eta + pdf.dim) / (pdf.eta + mahalanobisDistance) */
     logProb -= (pdf.getEta() + D) * 0.5 * Math.log(1 + mahalanobisDistance * pdf.getInverseEta());
     return logProb;
   }
