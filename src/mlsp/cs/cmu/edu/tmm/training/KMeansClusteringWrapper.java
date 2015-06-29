@@ -16,4 +16,6 @@ public interface KMeansClusteringWrapper {
   
   public double[][] getKMeans();
   
+  public double[][] getKVariances();
+  
 }

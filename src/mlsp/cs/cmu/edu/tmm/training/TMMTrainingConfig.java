@@ -4,6 +4,7 @@ public enum TMMTrainingConfig {
   
   NUM_T_DISTRIBUTIONS(64,64),
   NUM_ITERATIONS(10,10),
+  ETA_INITIALIZE(500,500),
   CONVERGENCE_CRITERIA(0,1e-10);
   
   private final int intValue;

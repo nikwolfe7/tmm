@@ -1,16 +1,10 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
-import java.util.List;
-
-import org.apache.commons.math3.util.Pair;
-
-import mlsp.cs.cmu.edu.tmm.MFCCVector;
 import mlsp.cs.cmu.edu.tmm.TDistribution;
 
 public class MFCCTDistributionInitializationFactory implements TDistributionInitializationFactory {
 
   private KMeansClusteringWrapper kMeansWrapper = null;
-  private List<Pair<MFCCVector,Integer>> vectorAssignments = null;
   private double[][] means = null;
   private double[][] variances = null;
   private double[] etas = null;
@@ -25,19 +19,16 @@ public class MFCCTDistributionInitializationFactory implements TDistributionInit
     kMeansWrapper.initialize(csvFilenames);
     /* Initialize components */
     this.means = kMeansWrapper.getKMeans();
-    this.variances = new double[means.length][means[0].length];
+    this.variances = kMeansWrapper.getKVariances();
     this.etas = new double[means.length];
-    double[] counts = kMeansWrapper.getVectorCountsPerCluster();
-    this.vectorAssignments = kMeansWrapper.getVectorAssignments();
-    /* Initialize the variances */
-    for(Pair<MFCCVector,Integer> vectorAssignment : vectorAssignments) {
-      for(int i = 0; i < variances.length; i++) {
-        
-      }
+    for(int i = 0; i < etas.length; i++) {
+      etas[i] = TMMTrainingConfig.ETA_INITIALIZE.getDblValue();
     }
-    
-    
-    return null;
+    TDistribution[] distributions = new TDistribution[means.length];
+    for(int i = 0; i < distributions.length; i++) {
+      distributions[i] = new TDistribution(means[i].length, means[i], variances[i], etas[i]);
+    }
+    return distributions;
   }
   
   public static void main(String[] args) {

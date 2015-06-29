@@ -1,9 +1,7 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.math3.util.Pair;
 
@@ -20,8 +18,9 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
   private SimpleKMeans clusterer = null;
   private Instances dataset = null;
   private double[][] kMeans = null;
+  private double[][] kVariances = null;
   private double[] numVectorsPerCluster = null;
-  private List<Pair<MFCCVector, Integer>> vectorAssignments;
+  private List<Pair<MFCCVector, Integer>> vectorAssignments = null;
   
   @Override
   public void initialize(String... csvFilenames) {
@@ -52,14 +51,13 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
       this.vectorAssignments = buildVectorAssignments();
       this.numVectorsPerCluster = buildVectorsPerClusterList();
       this.kMeans = buildCentroidMatrix();
-      Instances stdDevs = clusterer.getClusterStandardDevs();
-      System.out.println(stdDevs);
+      this.kVariances = buildVarianceMatrix();
       
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
-  
+
   @Override
   public double[] getVectorCountsPerCluster() {
     return numVectorsPerCluster;
@@ -73,6 +71,28 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
   @Override
   public double[][] getKMeans() {
     return kMeans;
+  }
+  
+  @Override
+  public double[][] getKVariances() {
+    return kVariances;
+  }
+  
+  private double[][] buildVarianceMatrix() {
+    Instances stdDevs = clusterer.getClusterStandardDevs();
+    int K = clusterer.getNumClusters();
+    int D = stdDevs.get(0).toDoubleArray().length;
+    double[][] matrix = new double[K][D];
+    int i = 0;
+    for(Instance instance : stdDevs) {
+      double[] row = instance.toDoubleArray();
+      for(int j = 0; j < row.length; j++) {
+        /* Std Dev is sqrt of the variance */
+        matrix[i][j] = Math.pow(row[j],2);
+      }
+      i++;
+    }
+    return matrix;
   }
 
   private double[] buildVectorsPerClusterList() {
@@ -125,6 +145,8 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
     System.out.println("numberspercluster: " + wekaClusterer.getVectorCountsPerCluster());
     System.out.println("assignments: " + wekaClusterer.getVectorAssignments());
   }
+
+  
 
   
 
