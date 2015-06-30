@@ -8,29 +8,28 @@ import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
 public class TMMTrainingUtil {
   
-  private static double REALLY_SMALL = 1.0e-10;
+  private static double REALLY_SMALL = TMMTrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
   
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
-    double stepValue = 0.1;
+    double stepValue = 2;
     double loopMax = 500;
     double eta = tDistribution.getEta();
     double dim = tDistribution.getDimension();
     double etaPlusDimDivideByTwo = (eta + dim)/2.0;
-    etaConstant = 1 + etaConstant + Gamma.digamma(etaPlusDimDivideByTwo) - Math.log(etaPlusDimDivideByTwo);
+    etaConstant += 1 + Gamma.digamma(etaPlusDimDivideByTwo) - Math.log(etaPlusDimDivideByTwo);
     double smallestCostEta = REALLY_SMALL; 
     double minCost = etaCost(smallestCostEta, etaConstant);
-    double aeta = REALLY_SMALL;
+    double aeta = 0.01;
     while(aeta <= loopMax) {
       double newTheta = etaCost(aeta, etaConstant);
       if(newTheta < minCost) {
         minCost = newTheta;
         smallestCostEta = aeta;
-        stepValue += (minCost/2);
       }
-      if(minCost <= REALLY_SMALL)
-        break;
+      if(minCost < 0.01)
+    	  break;
       else
-        aeta += stepValue;
+    	  aeta += stepValue;
     }
     return smallestCostEta;
   }
@@ -66,21 +65,19 @@ public class TMMTrainingUtil {
     iteration.setUVec(new double[K]);
     for (int i = 0; i < K; i++) {
       logP[i] = logProbability(iteration, i);
-      double tmmLogPrior = tMixtureModel.getLogMixtureWeight(i);
-      logP[i] += tmmLogPrior;
+      logP[i] += tMixtureModel.getLogMixtureWeight(i);
       /* keep track of the max */
       maxLogP = Math.max(maxLogP, logP[i]);
     }
     /* calc total probability */
     double totalProbability = 0;
-    double[] prob = new double[K];
     for (int i = 0; i < K; i++) {
-      prob[i] = Math.exp(logP[i] - maxLogP);
-      totalProbability += prob[i];
+      logP[i] = Math.exp(logP[i] - maxLogP);
+      totalProbability += logP[i];
     }
     iteration.setPosterior(new double[K]);
     for (int i = 0; i < K; i++) {
-      iteration.setPosterior(i, prob[i] / totalProbability);
+      iteration.setPosterior(i, logP[i] / totalProbability);
     }
     /* log prob is also returned */
     logProb = maxLogP + Math.log(totalProbability);

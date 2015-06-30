@@ -3,6 +3,7 @@ package mlsp.cs.cmu.edu.tmm.training;
 import java.util.List;
 
 import mlsp.cs.cmu.edu.tmm.MFCCVector;
+import mlsp.cs.cmu.edu.tmm.TDistribution;
 import mlsp.cs.cmu.edu.tmm.TMMConstants;
 import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
@@ -44,7 +45,7 @@ public class TMMTrainingModule {
       double[] etaConstants = new double[K];
       double[] sumWeights = new double[K];
       
-      double totalLogProbability = Double.NEGATIVE_INFINITY;
+      double totalLogProbability = 0;
       TrainingIteration iteration = new TrainingIteration();
       iteration.setTMM(mixtureModel);
       for(Pair<MFCCVector, Integer> vector : trainingData) {
@@ -65,14 +66,14 @@ public class TMMTrainingModule {
           /* weights */
           weight[n] = posterior[n] * uVec[n];
           /* eta constants */
-          etaConstants[n] = posterior[n] * (Math.log(uVec[n]) - uVec[n]);
+          etaConstants[n] += posterior[n] * (Math.log(uVec[n]) - uVec[n]);
           /* update new mixture weights */
           mixtureWeightsNew[n] += posterior[n];
           /* sum the weights */
           sumWeights[n] += weight[n];
           /* update the mean and variance */
           for(int t = 0; t < xt.getDimensionality(); t++) {
-            meanNew[n][t] = weight[n] * xt.getCoefficient(t);
+            meanNew[n][t] += weight[n] * xt.getCoefficient(t);
             /* THIS IS A HACK TO MAKE THINGS FASTER */
             double oldMean = mixtureModel.getTDistribution(n).getMean(t);
             varNew[n][t] += weight[n] * Math.pow((xt.getCoefficient(t) - oldMean),2);
@@ -80,21 +81,24 @@ public class TMMTrainingModule {
         }
         
         /* update weights, variances and eta values */
-        for(int n = 0; n < K; n++) {
-          for(int t = 0; t < xt.getDimensionality(); t++) {
-            meanNew[n][t] = meanNew[n][t] / sumWeights[n];
-            varNew[n][t] = varNew[n][t] / sumWeights[n];
-          }
-          /* update means and variances in the TDistribution */
-          mixtureModel.getTDistribution(n).setMean(meanNew[n]);
-          mixtureModel.getTDistribution(n).setVariance(varNew[n]);
-          /* eta constants */
-          etaConstants[n] /= mixtureWeightsNew[n];
-          /* mixture weights */
-          mixtureModel.setMixtureWeights(n, mixtureWeightsNew[n] / T);
-          double newEta = TMMTrainingUtil.solveForEta(etaConstants[n], mixtureModel.getTDistribution(n));
-          mixtureModel.getTDistribution(n).setEta(newEta);
-        }
+		for (int n = 0; n < K; n++) {
+			for (int t = 0; t < xt.getDimensionality(); t++) {
+				meanNew[n][t] /= sumWeights[n];
+				varNew[n][t] /= sumWeights[n];
+			}
+			/* update means and variances in the TDistribution */
+			mixtureModel.getTDistribution(n).setMean(meanNew[n]);
+			mixtureModel.getTDistribution(n).setVariance(varNew[n]);
+
+			/* eta constants */
+			etaConstants[n] /= mixtureWeightsNew[n];
+			
+			/* mixture weights */
+			mixtureModel.setMixtureWeights(n, mixtureWeightsNew[n] / T);
+			TDistribution tDist = mixtureModel.getTDistribution(n);
+			double newEta = TMMTrainingUtil.solveForEta(etaConstants[n], tDist);
+			mixtureModel.getTDistribution(n).setEta(newEta);
+		}
       }
       System.out.println("Total Log Probability: " + totalLogProbability);
     }
@@ -115,7 +119,7 @@ public class TMMTrainingModule {
 
   public static void main(String[] args) {
     String file1 = TMMConstants.TEST_MFCC_FILE.getStringVal();
-    String[] data = new String[10];
+    String[] data = new String[1];
     for (int i = 0; i < data.length; i++) {
       data[i] = file1;
     }

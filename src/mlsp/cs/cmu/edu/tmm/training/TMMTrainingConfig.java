@@ -6,7 +6,9 @@ public enum TMMTrainingConfig {
   NUM_ITERATIONS(10,10),
   ETA_INITIALIZE(500,500),
   EM_MAX_ITERATIONS(10,10),
+  REALLY_SMALL_NUMBER(0,1.0e-6),
   CONVERGENCE_CRITERIA(0,1e-10);
+
   
   private final int intValue;
   private final double dblValue;

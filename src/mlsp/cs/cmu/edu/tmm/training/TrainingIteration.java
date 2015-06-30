@@ -1,75 +1,79 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
 import mlsp.cs.cmu.edu.tmm.MFCCVector;
+import mlsp.cs.cmu.edu.tmm.TMMConstants;
 import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
 public class TrainingIteration {
 
-    private TMixtureModel tmm;
+	private TMixtureModel tmm;
 
-    private MFCCVector mfcc;
+	private MFCCVector mfcc;
 
-    private double[] posterior;
+	private double[] posterior;
 
-    private double[] uVec;
+	private double[] uVec;
 
-    private double logProbability;
-    
-    public TrainingIteration() {
-      this.logProbability = Double.NEGATIVE_INFINITY;
-      this.tmm = null;
-      this.mfcc = null;
-      this.posterior = null;
-      this.uVec = null;
-    }
+	private double logProbability;
 
-    public TMixtureModel getTMM() {
-      return tmm;
-    }
+	private double minVal;
 
-    public void setTMM(TMixtureModel tmm) {
-      this.tmm = tmm;
-    }
+	public TrainingIteration() {
+		this.minVal = TMMTrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
+		this.logProbability = Double.NEGATIVE_INFINITY;
+		this.tmm = null;
+		this.mfcc = null;
+		this.posterior = null;
+		this.uVec = null;
+	}
 
-    public MFCCVector getMFCC() {
-      return mfcc;
-    }
+	public TMixtureModel getTMM() {
+		return tmm;
+	}
 
-    public void setMFCC(MFCCVector mfcc) {
-      this.mfcc = mfcc;
-    }
+	public void setTMM(TMixtureModel tmm) {
+		this.tmm = tmm;
+	}
 
-    public double[] getPosterior() {
-      return posterior;
-    }
+	public MFCCVector getMFCC() {
+		return mfcc;
+	}
 
-    public void setPosterior(double[] posterior) {
-      this.posterior = posterior;
-    }
+	public void setMFCC(MFCCVector mfcc) {
+		this.mfcc = mfcc;
+	}
 
-    public void setPosterior(int index, double value) {
-      if (index < posterior.length)
-        posterior[index] = value;
-    }
+	public double[] getPosterior() {
+		return posterior;
+	}
 
-    public double[] getUVec() {
-      return uVec;
-    }
+	public void setPosterior(double[] posterior) {
+		this.posterior = posterior;
+	}
 
-    public void setUVec(double[] uVec) {
-      this.uVec = uVec;
-    }
+	public void setPosterior(int index, double value) {
+		if (index < posterior.length)
+			posterior[index] = Math.max(value, minVal);
+	}
 
-    public void setUVec(int index, double value) {
-      if (index < uVec.length)
-        uVec[index] = value;
-    }
+	public double[] getUVec() {
+		return uVec;
+	}
 
-    public double getLogProbability() {
-      return logProbability;
-    }
+	public void setUVec(double[] uVec) {
+		this.uVec = uVec;
+	}
 
-    public void setLogProbability(double logProbability) {
-      this.logProbability = logProbability;
-    }
-  }
+	public void setUVec(int index, double value) {
+		if (index < uVec.length)
+			uVec[index] = Math.max(value, minVal);
+	}
+
+	public double getLogProbability() {
+		return logProbability;
+	}
+
+	public void setLogProbability(double logProbability) {
+		this.logProbability = logProbability;
+	}
+}

@@ -28,8 +28,7 @@ public class TMixtureModel implements Iterator<TDistribution>, Iterable<TDistrib
     this.logMixtureWeights = new double[numComponents];
     this.iteration = 0;
     for(int i = 0; i < numComponents; i++) {
-      this.mixtureWeights[i] = mixtureWeights[i];
-      this.logMixtureWeights[i] = Math.log(mixtureWeights[i]);
+    	setMixtureWeights(i, mixtureWeights[i]);
     }
   }
   
