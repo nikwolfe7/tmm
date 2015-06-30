@@ -8,25 +8,31 @@ import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
 public class TMMTrainingUtil {
   
+  private static double REALLY_SMALL = 1.0e-10;
+  
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
-    double stepValue = 0.01;
+    double stepValue = 0.1;
     double loopMax = 500;
     double eta = tDistribution.getEta();
     double dim = tDistribution.getDimension();
     double etaPlusDimDivideByTwo = (eta + dim)/2.0;
     etaConstant = 1 + etaConstant + Gamma.digamma(etaPlusDimDivideByTwo) - Math.log(etaPlusDimDivideByTwo);
-    double smallestTheta = 0; 
-    double minCost = etaCost(smallestTheta, etaConstant);
-    double aeta = 0;
+    double smallestCostEta = REALLY_SMALL; 
+    double minCost = etaCost(smallestCostEta, etaConstant);
+    double aeta = REALLY_SMALL;
     while(aeta <= loopMax) {
       double newTheta = etaCost(aeta, etaConstant);
       if(newTheta < minCost) {
         minCost = newTheta;
-        smallestTheta = aeta;
+        smallestCostEta = aeta;
+        stepValue += (minCost/2);
       }
-      aeta += stepValue;
+      if(minCost <= REALLY_SMALL)
+        break;
+      else
+        aeta += stepValue;
     }
-    return smallestTheta;
+    return smallestCostEta;
   }
   
   private static double etaCost(double eta, double etaConstant) {

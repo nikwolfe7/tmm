@@ -58,7 +58,10 @@ public class TMixtureModel implements Iterator<TDistribution>, Iterable<TDistrib
   public void setMixtureWeights(int index, double newWeight) {
     if(index < mixtureWeights.length) {
       mixtureWeights[index] = newWeight;
-      logMixtureWeights[index] = Math.log(newWeight);
+      if(newWeight > 0)
+        logMixtureWeights[index] = Math.log(newWeight);
+      else 
+        logMixtureWeights[index] = Double.NEGATIVE_INFINITY;
     }
   }
   

@@ -22,6 +22,7 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
   private double[][] kVariances = null;
   private double[] numVectorsPerCluster = null;
   private List<Pair<MFCCVector, Integer>> vectorAssignments = null;
+  private double minVariance = 1.0e-6;
   
   @Override
   public void initialize(String... csvFilenames) {
@@ -89,7 +90,7 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
       double[] row = instance.toDoubleArray();
       for(int j = 0; j < row.length; j++) {
         /* Std Dev is sqrt of the variance */
-        matrix[i][j] = Math.pow(row[j],2);
+        matrix[i][j] = Math.max(Math.pow(row[j],2),minVariance);
       }
       i++;
     }

@@ -35,15 +35,16 @@ public class TMMTrainingModule {
 
     int numIteration = 0;
     System.out.println("START EM TRAINING...");
-    while(numIteration++ <= TMMTrainingConfig.EM_MAX_ITERATIONS.getIntValue()) {
+    while(numIteration <= TMMTrainingConfig.EM_MAX_ITERATIONS.getIntValue()) {
       System.out.print("Iteration " + numIteration + "... ");
+      numIteration++;
       double[][] meanNew = new double[K][D];
       double[][] varNew = new double[K][D];
       double[] mixtureWeightsNew = new double[K];
       double[] etaConstants = new double[K];
       double[] sumWeights = new double[K];
       
-      double totalLogProbability = 0;
+      double totalLogProbability = Double.NEGATIVE_INFINITY;
       TrainingIteration iteration = new TrainingIteration();
       iteration.setTMM(mixtureModel);
       for(Pair<MFCCVector, Integer> vector : trainingData) {

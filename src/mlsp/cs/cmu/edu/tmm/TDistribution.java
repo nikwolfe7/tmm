@@ -21,6 +21,8 @@ public class TDistribution {
 
   private double logScalingConstant;
 
+  private final double minVariance = 1.0e-6;
+
   /**
    * Bare bones constructor.
    * 
@@ -58,7 +60,7 @@ public class TDistribution {
     if (index < means.length)
       means[index] = mean;
   }
-  
+
   public void setMean(double[] means) {
     dimension = means.length;
     this.means = means;
@@ -70,22 +72,23 @@ public class TDistribution {
     else
       return -1;
   }
-  
+
   public void setVariance(int index, double variance) {
     if (index < variances.length) {
+      variance = Math.max(variance, minVariance);
       variances[index] = variance;
       inverseVariances[index] = 1 / variance;
     }
   }
-  
+
   public void setVariance(double[] vec) {
     dimension = vec.length;
-    for(int i = 0; i < vec.length; i++) {
+    for (int i = 0; i < vec.length; i++) {
       setVariance(i, vec[i]);
     }
     calculateLogScalingConstant();
   }
-  
+
   public double getVariance(int index) {
     if (index < variances.length)
       return variances[index];
@@ -110,12 +113,12 @@ public class TDistribution {
   public double getInverseEta() {
     return etaInverse;
   }
-  
+
   public void update() {
     calculateLogScalingConstant();
     /* anything else? */
   }
-  
+
   public void calculateLogScalingConstant() {
     logScalingConstant = 0;
     for (int i = 0; i < dimension; i++) {
@@ -125,11 +128,11 @@ public class TDistribution {
     logScalingConstant -= logGamma(eta * 0.5);
     logScalingConstant += logGamma((eta + dimension) * 0.5);
   }
-  
+
   private double logGamma(double arg) {
     return Gamma.logGamma(arg);
   }
-  
+
   public double getLogScalingConstant() {
     return logScalingConstant;
   }
@@ -137,7 +140,7 @@ public class TDistribution {
   public int getDimension() {
     return dimension;
   }
-  
+
   public void printDistribution() {
     Format format = new DecimalFormat("##.###");
     System.out.println("Dimension: " + dimension);
