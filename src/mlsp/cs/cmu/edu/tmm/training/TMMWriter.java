@@ -29,7 +29,6 @@ public class TMMWriter {
       writer.write(MATLABFileTMMFactory.dimensionMarker + "\n");
       writer.write(model.getTDistribution(0).getDimension() + "\n");
       
-      
       /* Student-t components */
       hash(writer);
       writer.write(MATLABFileTMMFactory.mixtureComponentsMarker + "\n");

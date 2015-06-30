@@ -11,25 +11,22 @@ public class TMMTrainingUtil {
   private static double REALLY_SMALL = TMMTrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
   
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
-    double stepValue = 2;
-    double loopMax = 500;
+    double stepValue = 0.01;
+    double loopLimit = 500;
     double eta = tDistribution.getEta();
     double dim = tDistribution.getDimension();
-    double etaPlusDimDivideByTwo = (eta + dim)/2.0;
+    double etaPlusDimDivideByTwo = (eta + dim) / 2.0;
     etaConstant += 1 + Gamma.digamma(etaPlusDimDivideByTwo) - Math.log(etaPlusDimDivideByTwo);
-    double smallestCostEta = REALLY_SMALL; 
+    double smallestCostEta = REALLY_SMALL;
+    double aeta = REALLY_SMALL;
     double minCost = etaCost(smallestCostEta, etaConstant);
-    double aeta = 0.01;
-    while(aeta <= loopMax) {
+    while (minCost >= 0.001 && aeta <= loopLimit) {
       double newTheta = etaCost(aeta, etaConstant);
-      if(newTheta < minCost) {
+      if (newTheta < minCost) {
         minCost = newTheta;
         smallestCostEta = aeta;
       }
-      if(minCost < 0.01)
-    	  break;
-      else
-    	  aeta += stepValue;
+      aeta += stepValue;
     }
     return smallestCostEta;
   }
@@ -64,7 +61,8 @@ public class TMMTrainingUtil {
     /* u -- who knows what it is??? */
     iteration.setUVec(new double[K]);
     for (int i = 0; i < K; i++) {
-      logP[i] = logProbability(iteration, i);
+      logProb = logProbability(iteration, i);
+      logP[i] = logProb;
       logP[i] += tMixtureModel.getLogMixtureWeight(i);
       /* keep track of the max */
       maxLogP = Math.max(maxLogP, logP[i]);
@@ -102,17 +100,22 @@ public class TMMTrainingUtil {
     /* return probability */
     double logProb = pdf.getLogScalingConstant();
     /*
-     * Had no idea what this was until now because 
-     * Bhiksha said to ignore his slides that day :-)
+     * Had no idea what this was until now because Bhiksha said to ignore his slides that day :-)
      */
     double mahalanobisDistance = 0;
     for (int i = 0; i < D; i++) {
       double diff = vec.getCoefficient(i) - pdf.getMean(i);
       mahalanobisDistance += diff * diff * pdf.getInverseVariance(i);
     }
-    double u = (pdf.getEta() + pdf.getDimension()) / (pdf.getEta() + mahalanobisDistance);
+    double u = 0.0;
+    if (TMMTrainingConfig.DISTRIBUTION.getIntValue() == TMMTrainingConfig.GAUSSIAN.getIntValue()) {
+      u = 1.0;
+      logProb -= 0.5 * mahalanobisDistance;
+    } else if (TMMTrainingConfig.DISTRIBUTION.getIntValue() == TMMTrainingConfig.STUDENT_T.getIntValue()) {
+      u = (pdf.getEta() + pdf.getDimension()) / (pdf.getEta() + mahalanobisDistance);
+      logProb -= (pdf.getEta() + D) * 0.5 * Math.log(1 + mahalanobisDistance * pdf.getInverseEta());
+    }
     iteration.setUVec(index, u);
-    logProb -= (pdf.getEta() + D) * 0.5 * Math.log(1 + mahalanobisDistance * pdf.getInverseEta());
     return logProb;
   }
 

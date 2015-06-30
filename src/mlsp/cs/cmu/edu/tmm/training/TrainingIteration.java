@@ -1,7 +1,6 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
 import mlsp.cs.cmu.edu.tmm.MFCCVector;
-import mlsp.cs.cmu.edu.tmm.TMMConstants;
 import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
 public class TrainingIteration {
@@ -16,11 +15,8 @@ public class TrainingIteration {
 
 	private double logProbability;
 
-	private double minVal;
-
 	public TrainingIteration() {
-		this.minVal = TMMTrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
-		this.logProbability = Double.NEGATIVE_INFINITY;
+		this.logProbability = 0;
 		this.tmm = null;
 		this.mfcc = null;
 		this.posterior = null;
@@ -53,7 +49,7 @@ public class TrainingIteration {
 
 	public void setPosterior(int index, double value) {
 		if (index < posterior.length)
-			posterior[index] = Math.max(value, minVal);
+			posterior[index] = value;
 	}
 
 	public double[] getUVec() {
@@ -66,7 +62,7 @@ public class TrainingIteration {
 
 	public void setUVec(int index, double value) {
 		if (index < uVec.length)
-			uVec[index] = Math.max(value, minVal);
+			uVec[index] = value;
 	}
 
 	public double getLogProbability() {

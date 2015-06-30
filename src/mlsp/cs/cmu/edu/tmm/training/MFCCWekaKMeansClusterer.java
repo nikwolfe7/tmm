@@ -91,6 +91,7 @@ public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
       for(int j = 0; j < row.length; j++) {
         /* Std Dev is sqrt of the variance */
         matrix[i][j] = Math.max(Math.pow(row[j],2),minVariance);
+        matrix[i][j] = 1.0;
       }
       i++;
     }

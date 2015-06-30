@@ -3,6 +3,8 @@ package mlsp.cs.cmu.edu.tmm;
 import java.text.DecimalFormat;
 import java.text.Format;
 
+import mlsp.cs.cmu.edu.tmm.training.TMMTrainingConfig;
+
 import org.apache.commons.math3.special.Gamma;
 
 public class TDistribution {
@@ -21,7 +23,7 @@ public class TDistribution {
 
   private double logScalingConstant;
 
-  private final double minVariance = 1.0e-6;
+  private final double minVariance = TMMTrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
 
   /**
    * Bare bones constructor.
@@ -124,9 +126,11 @@ public class TDistribution {
     for (int i = 0; i < dimension; i++) {
       logScalingConstant -= 0.5 * Math.log(variances[i]);
     }
-    logScalingConstant -= (0.5 * dimension) * Math.log(Math.PI * eta);
-    logScalingConstant -= logGamma(eta * 0.5);
-    logScalingConstant += logGamma((eta + dimension) * 0.5);
+    if(TMMTrainingConfig.DISTRIBUTION.getIntValue() == TMMTrainingConfig.STUDENT_T.getIntValue()) {
+      logScalingConstant -= (0.5 * dimension) * Math.log(Math.PI * eta);
+      logScalingConstant -= logGamma(eta * 0.5);
+      logScalingConstant += logGamma((eta + dimension) * 0.5);
+    }
   }
 
   private double logGamma(double arg) {
