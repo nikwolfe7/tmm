@@ -13,8 +13,8 @@ import weka.core.Instances;
 
 public class MFCCWekaKMeansClusterer implements KMeansClusteringWrapper {
 
-  private int numClusters = TMMTrainingConfig.NUM_T_DISTRIBUTIONS.getIntValue();
-  private int numIterations = TMMTrainingConfig.NUM_ITERATIONS.getIntValue();
+  private int numClusters = TrainingConfig.NUM_T_DISTRIBUTIONS.getIntValue();
+  private int numIterations = TrainingConfig.NUM_ITERATIONS.getIntValue();
   private WekaKMeansTrainingDatasetFactory datasetFactory = null;
   private SimpleKMeans clusterer = null;
   private Instances dataset = null;

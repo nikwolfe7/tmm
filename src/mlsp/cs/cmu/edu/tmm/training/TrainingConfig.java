@@ -1,6 +1,6 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
-public enum TMMTrainingConfig {
+public enum TrainingConfig {
   
   GAUSSIAN(0,0),
   STUDENT_T(1,1),
@@ -16,7 +16,7 @@ public enum TMMTrainingConfig {
   private final int intValue;
   private final double dblValue;
   
-  private TMMTrainingConfig(int v1, double v2) {
+  private TrainingConfig(int v1, double v2) {
    this.intValue = v1;
    this.dblValue = v2;
   }

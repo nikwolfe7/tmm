@@ -8,7 +8,7 @@ import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
 public class TMMTrainingUtil {
   
-  private static double REALLY_SMALL = TMMTrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
+  private static double REALLY_SMALL = TrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
   
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
     double stepValue = 0.01;
@@ -108,10 +108,10 @@ public class TMMTrainingUtil {
       mahalanobisDistance += diff * diff * pdf.getInverseVariance(i);
     }
     double u = 0.0;
-    if (TMMTrainingConfig.DISTRIBUTION.getIntValue() == TMMTrainingConfig.GAUSSIAN.getIntValue()) {
+    if (TrainingConfig.DISTRIBUTION.getIntValue() == TrainingConfig.GAUSSIAN.getIntValue()) {
       u = 1.0;
       logProb -= 0.5 * mahalanobisDistance;
-    } else if (TMMTrainingConfig.DISTRIBUTION.getIntValue() == TMMTrainingConfig.STUDENT_T.getIntValue()) {
+    } else if (TrainingConfig.DISTRIBUTION.getIntValue() == TrainingConfig.STUDENT_T.getIntValue()) {
       u = (pdf.getEta() + pdf.getDimension()) / (pdf.getEta() + mahalanobisDistance);
       logProb -= (pdf.getEta() + D) * 0.5 * Math.log(1 + mahalanobisDistance * pdf.getInverseEta());
     }

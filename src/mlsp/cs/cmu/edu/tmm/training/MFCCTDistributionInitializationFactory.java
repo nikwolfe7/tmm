@@ -23,7 +23,7 @@ public class MFCCTDistributionInitializationFactory implements TDistributionInit
     this.variances = kMeansWrapper.getKVariances();
     this.etas = new double[means.length];
     for(int i = 0; i < etas.length; i++) {
-      etas[i] = TMMTrainingConfig.ETA_INITIALIZE.getDblValue();
+      etas[i] = TrainingConfig.ETA_INITIALIZE.getDblValue();
     }
     TDistribution[] distributions = new TDistribution[means.length];
     for(int i = 0; i < distributions.length; i++) {

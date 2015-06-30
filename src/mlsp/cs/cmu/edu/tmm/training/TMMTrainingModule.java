@@ -43,7 +43,7 @@ public class TMMTrainingModule {
     System.out.println("START EM TRAINING...");
     double prevTotal = -10e6;
     double difference = Double.POSITIVE_INFINITY; 
-    while(numIteration <= TMMTrainingConfig.EM_MAX_ITERATIONS.getIntValue() && difference > TMMTrainingConfig.CONVERGENCE_CRITERIA.getDblValue()) {
+    while(numIteration <= TrainingConfig.EM_MAX_ITERATIONS.getIntValue() && difference > TrainingConfig.CONVERGENCE_CRITERIA.getDblValue()) {
       System.out.print("Iteration " + numIteration + "... ");
       numIteration++;
       double[][] meanNew = new double[K][D];
