@@ -4,12 +4,10 @@ public class GaussianDistribution extends Distribution {
 
   public GaussianDistribution(int dim) {
     super(dim);
-    // TODO Auto-generated constructor stub
   }
 
   public GaussianDistribution(int dim, double[] means, double[] variances) {
     super(dim, means, variances, Double.MAX_VALUE);
-    // TODO Auto-generated constructor stub
   }
 
   @Override

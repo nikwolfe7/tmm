@@ -11,7 +11,7 @@ public class TMMTrainingUtil {
   private static double REALLY_SMALL = TrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
   
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
-    double stepValue = 0.01;
+    double stepValue = 0.1;
     double loopLimit = 500;
     double eta = tDistribution.getEta();
     double dim = tDistribution.getDimension();
@@ -20,7 +20,7 @@ public class TMMTrainingUtil {
     double smallestCostEta = REALLY_SMALL;
     double aeta = REALLY_SMALL;
     double minCost = etaCost(smallestCostEta, etaConstant);
-    while (minCost >= 0.001 && aeta <= loopLimit) {
+    while (minCost >= 0.0001 && aeta <= loopLimit) {
       double newTheta = etaCost(aeta, etaConstant);
       if (newTheta < minCost) {
         minCost = newTheta;
