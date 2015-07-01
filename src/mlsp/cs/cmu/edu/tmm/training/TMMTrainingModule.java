@@ -31,6 +31,7 @@ public class TMMTrainingModule {
   }
 
   public void train(TMMConstants enumVal, String... csvFiles) {
+    double start = System.currentTimeMillis();
     this.enumVal = enumVal;
     this.mixtureModel = initializationFactory.getInitializedModel(enumVal, csvFiles);
     this.kMeansWrapper = initializationFactory.getKMeansClusteringWrapper();
@@ -115,6 +116,10 @@ public class TMMTrainingModule {
     }
     System.out.println("Training finished!");
     /* Training complete! */
+    double end = System.currentTimeMillis();
+    double duration = Math.abs(end - start);
+    System.out.println("Training completed in " + duration + "ms.\nReport:\nTraining Vectors:\t"
+            + T + "\nDimensionality:\t" + D + "\nMixture Components:\t" + K);
     printModelToFile();
   }
 
@@ -128,7 +133,7 @@ public class TMMTrainingModule {
 
   public static void main(String[] args) {
     String file1 = TMMConstants.TEST_MFCC_FILE.getStringVal();
-    String[] data = new String[10];
+    String[] data = new String[2000];
     for (int i = 0; i < data.length; i++) {
       data[i] = file1;
     }

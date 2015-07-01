@@ -14,20 +14,20 @@ public class TMMTrainingUtil {
     Fzero_methods fToZero = new ZeroClass(etaConstant, tDistribution);
     double a = 1;
     /* Force f(a) to be negative */
-    while(fToZero.f_to_zero(a) > 0) {
+    while (fToZero.f_to_zero(a) > 0) {
       a *= 2;
     }
     double b = a;
     /* Force f(b) to be positive */
-    while(fToZero.f_to_zero(b) < 0) {
+    while (fToZero.f_to_zero(b) < 0) {
       b /= 2;
     }
     /* binary search */
     double newEta = 0;
     double tolerance = REALLY_SMALL;
-    while(Math.abs(a - b) > tolerance) {
+    while (Math.abs(a - b) > tolerance) {
       newEta = (a + b) / 2;
-      if(fToZero.f_to_zero(newEta) < 0) {
+      if (fToZero.f_to_zero(newEta) < 0) {
         a = newEta;
       } else {
         b = newEta;
