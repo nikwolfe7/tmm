@@ -1,5 +1,9 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
+import optimization.Fzero;
+import optimization.FzeroTest;
+import optimization.Fzero_methods;
+
 import org.apache.commons.math3.special.Gamma;
 
 import mlsp.cs.cmu.edu.tmm.MFCCVector;
@@ -7,32 +11,41 @@ import mlsp.cs.cmu.edu.tmm.TDistribution;
 import mlsp.cs.cmu.edu.tmm.TMixtureModel;
 
 public class TMMTrainingUtil {
-  
+
   private static double REALLY_SMALL = TrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
-  
+
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
-    double stepValue = 0.1;
-    double loopLimit = 500;
-    double eta = tDistribution.getEta();
-    double dim = tDistribution.getDimension();
-    double etaPlusDimDivideByTwo = (eta + dim) / 2.0;
-    etaConstant += 1 + Gamma.digamma(etaPlusDimDivideByTwo) - Math.log(etaPlusDimDivideByTwo);
-    double smallestCostEta = REALLY_SMALL;
-    double aeta = REALLY_SMALL;
-    double minCost = etaCost(smallestCostEta, etaConstant);
-    while (minCost >= 0.0001 && aeta <= loopLimit) {
-      double newTheta = etaCost(aeta, etaConstant);
-      if (newTheta < minCost) {
-        minCost = newTheta;
-        smallestCostEta = aeta;
+
+    final class ZeroClass implements Fzero_methods {
+
+      private int dim;
+      private double eta;
+      private double etaConstant;
+
+      public ZeroClass(double etaConstant, TDistribution tDistribution) {
+        this.eta = tDistribution.getEta();
+        this.dim = tDistribution.getDimension();
+        double etaDimDivTwo = (eta + dim) / 2.0;
+        this.etaConstant = 1 + etaConstant + Gamma.digamma(etaDimDivTwo) - Math.log(etaDimDivTwo);
       }
-      aeta += stepValue;
+
+      @Override
+      public double f_to_zero(double x) {
+        return Math.abs(Math.log(eta / 2) - Gamma.digamma(eta / 2) + etaConstant);
+      }
     }
-    return smallestCostEta;
-  }
-  
-  private static double etaCost(double eta, double etaConstant) {
-    return Math.abs(Math.log(eta/2) - Gamma.digamma(eta/2) + etaConstant);
+    
+    Fzero_methods fToZero = new ZeroClass(etaConstant, tDistribution);
+    double[] b = new double[] {0, 0.001};
+    double[] c = new double[] {0, 1000};
+    double r = 1;
+    double re = REALLY_SMALL;
+    double ae = REALLY_SMALL;
+    int[] iflag = new int[2];
+    Fzero.fzero(fToZero, b, c, r, re, ae, iflag);
+    
+    /* value in b1 is the approximation of a zero for the function */
+    return b[1]; 
   }
 
   public static void getTrainingIteration(TrainingIteration iteration) {

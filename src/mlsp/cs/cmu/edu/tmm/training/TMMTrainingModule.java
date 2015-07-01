@@ -22,7 +22,7 @@ public class TMMTrainingModule {
   private TMixtureModel mixtureModel;
 
   private TMMConstants enumVal;
-  
+
   private Format fmt;
 
   public TMMTrainingModule(TMMTrainingFactory initializationFactory) {
@@ -42,34 +42,39 @@ public class TMMTrainingModule {
     int numIteration = 0;
     System.out.println("START EM TRAINING...");
     double prevTotal = -10e6;
-    double difference = Double.POSITIVE_INFINITY; 
-    while(numIteration <= TrainingConfig.EM_MAX_ITERATIONS.getIntValue() && difference > TrainingConfig.CONVERGENCE_CRITERIA.getDblValue()) {
+    double difference = Double.POSITIVE_INFINITY;
+    while (numIteration <= TrainingConfig.EM_MAX_ITERATIONS.getIntValue()
+            && difference > TrainingConfig.CONVERGENCE_CRITERIA.getDblValue()) {
+      
       System.out.print("Iteration " + numIteration + "... ");
       numIteration++;
+      
+      /* new buckets */
       double[][] meanNew = new double[K][D];
       double[][] varNew = new double[K][D];
       double[] mixtureWeightsNew = new double[K];
       double[] etaConstants = new double[K];
       double[] sumWeights = new double[K];
-      
+
+      /* Iterate through all training data, compute sufficient statistics */
       double totalLogProbability = 0;
       TrainingIteration iteration = new TrainingIteration();
       iteration.setTMM(mixtureModel);
-      for(Pair<MFCCVector, Integer> vector : trainingData) {
+      for (Pair<MFCCVector, Integer> vector : trainingData) {
         /* MFCC vector */
         MFCCVector xt = vector.getFirst();
         iteration.setMFCC(xt);
-        
+
         /* Calcuate posteriors and sufficient statistics */
         TMMTrainingUtil.getTrainingIteration(iteration);
         double logProb = iteration.getLogProbability();
         double[] posterior = iteration.getPosterior();
         double[] uVec = iteration.getUVec();
-        
+
         /* Update means and variances */
         totalLogProbability += logProb;
         double[] weight = new double[K];
-        for(int n = 0; n < K; n++) {
+        for (int n = 0; n < K; n++) {
           /* weights */
           weight[n] = posterior[n] * uVec[n];
           /* eta constants */
@@ -79,18 +84,18 @@ public class TMMTrainingModule {
           /* sum the weights */
           sumWeights[n] += weight[n];
           /* update the mean and variance */
-          for(int t = 0; t < xt.getDimensionality(); t++) {
+          for (int t = 0; t < xt.getDimensionality(); t++) {
             meanNew[n][t] += weight[n] * xt.getCoefficient(t);
             /* THIS IS A HACK TO MAKE THINGS FASTER */
             double oldMean = mixtureModel.getTDistribution(n).getMean(t);
-            varNew[n][t] += weight[n] * Math.pow((xt.getCoefficient(t) - oldMean),2);
+            varNew[n][t] += weight[n] * Math.pow((xt.getCoefficient(t) - oldMean), 2);
           }
         }
-      }  
-        /* update weights, variances and eta values */
-      for(int n = 0; n < mixtureModel.getNumComponents(); n++) {
+      }
+      /* update weights, variances and eta values */
+      for (int n = 0; n < mixtureModel.getNumComponents(); n++) {
         TDistribution tDist = mixtureModel.getTDistribution(n);
-        for(int t = 0; t < tDist.getDimension(); t++) {
+        for (int t = 0; t < tDist.getDimension(); t++) {
           tDist.setMean(t, meanNew[n][t] / sumWeights[n]);
           tDist.setVariance(t, varNew[n][t] / sumWeights[n]);
         }
@@ -102,16 +107,15 @@ public class TMMTrainingModule {
         tDist.setEta(newEta);
       }
       difference = (totalLogProbability - prevTotal) / Math.abs(prevTotal);
-      System.out.println("Total Log Probability: " + fmt.format(totalLogProbability) + " Diff: " + fmt.format(totalLogProbability - prevTotal));
+      System.out.println("Total Log Probability: " + fmt.format(totalLogProbability) + " Diff: "
+              + fmt.format(totalLogProbability - prevTotal));
       prevTotal = totalLogProbability;
     }
     System.out.println("Training finished!");
     /* Training complete! */
     printModelToFile();
   }
-  
-  
-  
+
   private void printModelToFile() {
     TMMWriter tmmWriter = new TMMWriter(mixtureModel, enumVal);
     System.out.println("Now printing model for " + enumVal.getStringVal() + " to file: "
