@@ -3,8 +3,6 @@ package mlsp.cs.cmu.edu.tmm.training;
 import optimization.Fzero;
 import optimization.Fzero_methods;
 
-import org.apache.commons.math3.special.Gamma;
-
 import mlsp.cs.cmu.edu.tmm.MFCCVector;
 import mlsp.cs.cmu.edu.tmm.TDistribution;
 import mlsp.cs.cmu.edu.tmm.TMixtureModel;
@@ -15,29 +13,10 @@ public class TMMTrainingUtil {
 
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
 
-    final class ZeroClass implements Fzero_methods {
-
-      private int dim;
-      private double eta;
-      private double etaConstant;
-
-      public ZeroClass(double etaConstant, TDistribution tDistribution) {
-        this.eta = tDistribution.getEta();
-        this.dim = tDistribution.getDimension();
-        double etaDimDivTwo = (eta + dim) / 2.0;
-        this.etaConstant = 1 + etaConstant + Gamma.digamma(etaDimDivTwo) - Math.log(etaDimDivTwo);
-      }
-
-      @Override
-      public double f_to_zero(double x) {
-        return Math.abs(Math.log(eta / 2) - Gamma.digamma(eta / 2) + etaConstant);
-      }
-    }
-    
     Fzero_methods fToZero = new ZeroClass(etaConstant, tDistribution);
     double[] b = new double[] {0, 0.001};
     double[] c = new double[] {0, 1000};
-    double r = 1;
+    double r = 100;
     double re = REALLY_SMALL;
     double ae = REALLY_SMALL;
     int[] iflag = new int[2];
