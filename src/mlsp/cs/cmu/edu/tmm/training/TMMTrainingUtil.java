@@ -15,8 +15,8 @@ public class TMMTrainingUtil {
 
     Fzero_methods fToZero = new ZeroClass(etaConstant, tDistribution);
     double[] b = new double[] {0, 0.001};
-    double[] c = new double[] {0, 1000};
-    double r = 100;
+    double[] c = new double[] {0, 100};
+    double r = 1;
     double re = REALLY_SMALL;
     double ae = REALLY_SMALL;
     int[] iflag = new int[2];
