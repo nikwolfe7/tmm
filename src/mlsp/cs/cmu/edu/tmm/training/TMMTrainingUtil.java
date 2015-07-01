@@ -1,7 +1,6 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
 import optimization.Fzero;
-import optimization.FzeroTest;
 import optimization.Fzero_methods;
 
 import org.apache.commons.math3.special.Gamma;
