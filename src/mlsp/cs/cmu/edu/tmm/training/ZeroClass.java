@@ -21,7 +21,8 @@ public class ZeroClass implements Fzero_methods {
 
   @Override
   public double f_to_zero(double x) {
-    return Math.abs(Math.log(eta / 2) - Gamma.digamma(eta / 2) + etaConstant);
+    double val = Math.log(x / 2.0) - Gamma.digamma(x / 2.0) + etaConstant; 
+    return val;
   }
 
 }

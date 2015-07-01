@@ -45,10 +45,10 @@ public class TMMTrainingModule {
     double difference = Double.POSITIVE_INFINITY;
     while (numIteration <= TrainingConfig.EM_MAX_ITERATIONS.getIntValue()
             && difference > TrainingConfig.CONVERGENCE_CRITERIA.getDblValue()) {
-      
+
       System.out.print("Iteration " + numIteration + "... ");
       numIteration++;
-      
+
       /* new buckets */
       double[][] meanNew = new double[K][D];
       double[][] varNew = new double[K][D];
@@ -97,13 +97,15 @@ public class TMMTrainingModule {
         TDistribution tDist = mixtureModel.getTDistribution(n);
         for (int t = 0; t < tDist.getDimension(); t++) {
           tDist.setMean(t, meanNew[n][t] / sumWeights[n]);
-          tDist.setVariance(t, varNew[n][t] / sumWeights[n]);
+          tDist.setVariance(t, varNew[n][t] / mixtureWeightsNew[n]);
         }
         /* eta constants */
         etaConstants[n] /= mixtureWeightsNew[n];
         /* mixture weights */
         mixtureModel.setMixtureWeights(n, mixtureWeightsNew[n] / T);
-        double newEta = TMMTrainingUtil.solveForEta(etaConstants[n], tDist);
+        /* solving for eta */
+        double etaConstant = etaConstants[n];
+        double newEta = TMMTrainingUtil.solveForEta(etaConstant, tDist);
         tDist.setEta(newEta);
       }
       difference = (totalLogProbability - prevTotal) / Math.abs(prevTotal);
@@ -133,8 +135,8 @@ public class TMMTrainingModule {
     TMMTrainingFactory initializationFactory = new MFCCTMMTrainingFactory();
     TMMTrainingModule trainingModule = new TMMTrainingModule(initializationFactory);
     trainingModule.train(TMMConstants.CLASS_GO, data);
-    trainingModule.train(TMMConstants.CLASS_JUMP, data);
-    trainingModule.train(TMMConstants.CLASS_BACKGROUND, data);
+    // trainingModule.train(TMMConstants.CLASS_JUMP, data);
+    // trainingModule.train(TMMConstants.CLASS_BACKGROUND, data);
   }
 
 }

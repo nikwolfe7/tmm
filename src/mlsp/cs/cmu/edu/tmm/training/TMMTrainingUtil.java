@@ -1,6 +1,5 @@
 package mlsp.cs.cmu.edu.tmm.training;
 
-import optimization.Fzero;
 import optimization.Fzero_methods;
 
 import mlsp.cs.cmu.edu.tmm.MFCCVector;
@@ -12,18 +11,29 @@ public class TMMTrainingUtil {
   private static double REALLY_SMALL = TrainingConfig.REALLY_SMALL_NUMBER.getDblValue();
 
   public static double solveForEta(double etaConstant, TDistribution tDistribution) {
-
     Fzero_methods fToZero = new ZeroClass(etaConstant, tDistribution);
-    double[] b = new double[] {0, 0.001};
-    double[] c = new double[] {0, 100};
-    double r = 1;
-    double re = REALLY_SMALL;
-    double ae = REALLY_SMALL;
-    int[] iflag = new int[2];
-    Fzero.fzero(fToZero, b, c, r, re, ae, iflag);
-    
-    /* value in b1 is the approximation of a zero for the function */
-    return b[1]; 
+    double a = 1;
+    /* Force f(a) to be negative */
+    while(fToZero.f_to_zero(a) > 0) {
+      a *= 2;
+    }
+    double b = a;
+    /* Force f(b) to be positive */
+    while(fToZero.f_to_zero(b) < 0) {
+      b /= 2;
+    }
+    /* binary search */
+    double newEta = 0;
+    double tolerance = REALLY_SMALL;
+    while(Math.abs(a - b) > tolerance) {
+      newEta = (a + b) / 2;
+      if(fToZero.f_to_zero(newEta) < 0) {
+        a = newEta;
+      } else {
+        b = newEta;
+      }
+    }
+    return newEta;
   }
 
   public static void getTrainingIteration(TrainingIteration iteration) {
